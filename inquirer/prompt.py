@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 import prompts
-from prompts import list, confirm
+from prompts import list, confirm, input
 from prompt_toolkit.shortcuts import run_application
 
 from . import PromptParameterException
@@ -26,12 +26,33 @@ def prompt(questions, answers=None, **kwargs):
         if not 'message' in question:
             raise PromptParameterException('message')
         try:
-            kwargs.update(question)
-            type = kwargs.pop('type')
-            name = kwargs.pop('name')
-            message = kwargs.pop('message')
-            application = getattr(prompts, type).question(name, message,
-                                                          **kwargs)
+            _kwargs = {}
+            _kwargs.update(kwargs)
+            _kwargs.update(question)
+            type = _kwargs.pop('type')
+            name = _kwargs.pop('name')
+            message = _kwargs.pop('message')
+            when = _kwargs.pop('when', None)
+            filter = _kwargs.pop('filter', None)
+            if when:
+                # at least a little sanity check!
+                if callable(question['when']):
+                    try:
+                        if not question['when'](answers):
+                            continue
+                    except Exception as e:
+                        raise ValueError(
+                            'Problem in \'when\' check of %s question: %s' %
+                            (name, e))
+                else:
+                    raise ValueError('\'when\' needs to be function that ' \
+                                     'accepts a dict argument')
+            if filter:
+                # at least a little sanity check!
+                if not callable(question['filter']):
+                    raise ValueError('\'filter\' needs to be function that ' \
+                                     'accepts an argument')
+            application = getattr(prompts, type).question(message, **_kwargs)
 
             answer = run_application(
                 application,
@@ -41,6 +62,13 @@ def prompt(questions, answers=None, **kwargs):
                 refresh_interval=refresh_interval,
                 eventloop=eventloop)
             if answer is not None:
+                if filter:
+                    try:
+                        answer = question['filter'](answer)
+                    except Exception as e:
+                        raise ValueError(
+                            'Problem processing \'filter\' of %s question: %s' %
+                            (name, e))
                 answers[name] = answer
         except AttributeError as e:
             print(e)

@@ -86,17 +86,12 @@ class InquirerControl(TokenListControl):
         return self.choices[self.selected_option_index]
 
 
-def question(name, message, **kwargs):
-    # print(message)
-
+def question(message, **kwargs):
     if not 'choices' in kwargs:
         raise PromptParameterException('choices')
 
     choices = kwargs.pop('choices', None)
-    default = kwargs.pop('default', None)  # TODO
-    filter = kwargs.pop('filter', lambda val: val)  # TODO
-    when = kwargs.pop('when', lambda: True)  # TODO
-    validate = kwargs.pop('validate', lambda: True)  # TODO
+    default = kwargs.pop('default', 0)  # TODO
 
     # TODO style defaults on detail level
     style = kwargs.pop('style', style_from_dict({

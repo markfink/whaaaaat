@@ -29,7 +29,7 @@ style = style_from_dict({
 })
 
 
-def _feed_app_with_input(type, name, message, text, **kwargs):
+def _feed_app_with_input(type, message, text, **kwargs):
     """
     Create a CommandLineInterface, feed it with the given user input and return
     the CLI object.
@@ -39,8 +39,7 @@ def _feed_app_with_input(type, name, message, text, **kwargs):
     # If the given text doesn't end with a newline, the interface won't finish.
     assert text.endswith('\n')
 
-    application = getattr(prompts, type).question(name, message,
-                                                  **kwargs)
+    application = getattr(prompts, type).question(message, **kwargs)
 
     loop = PosixEventLoop()
     try:
@@ -67,7 +66,7 @@ def test_select_first_choice():
     #text = DOWN + ENTER
     text = ENTER
 
-    result, cli = _feed_app_with_input('list', name, message, text, **kwargs)
+    result, cli = _feed_app_with_input('list', message, text, **kwargs)
     assert result == 'foo'
 
 
@@ -79,7 +78,7 @@ def test_select_second_choice():
     }
     text = DOWN + ENTER
 
-    result, cli = _feed_app_with_input('list', name, message, text, **kwargs)
+    result, cli = _feed_app_with_input('list', message, text, **kwargs)
     assert result == 'bar'
 
 
@@ -91,7 +90,7 @@ def test_select_third_choice():
     }
     text = DOWN + DOWN + ENTER
 
-    result, cli = _feed_app_with_input('list', name, message, text, **kwargs)
+    result, cli = _feed_app_with_input('list', message, text, **kwargs)
     assert result == 'bazz'
 
 
@@ -103,7 +102,7 @@ def test_cycle_to_first_choice():
     }
     text = DOWN + DOWN + DOWN + ENTER
 
-    result, cli = _feed_app_with_input('list', name, message, text, **kwargs)
+    result, cli = _feed_app_with_input('list', message, text, **kwargs)
     assert result == 'foo'
 
 
@@ -115,5 +114,8 @@ def test_cycle_backwards():
     }
     text = UP + ENTER
 
-    result, cli = _feed_app_with_input('list', name, message, text, **kwargs)
+    result, cli = _feed_app_with_input('list', message, text, **kwargs)
     assert result == 'bazz'
+
+
+# TODO number shortcuts + tests from Inquirer.js

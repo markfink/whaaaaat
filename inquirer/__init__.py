@@ -5,6 +5,7 @@ import os
 
 from prompt_toolkit.token import Token
 from prompt_toolkit.styles import style_from_dict
+from prompt_toolkit.validation import Validator, ValidationError
 
 from utils import print_json, format_json
 

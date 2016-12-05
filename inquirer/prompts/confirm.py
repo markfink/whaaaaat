@@ -2,8 +2,7 @@
 """
 `confirm` type question
 """
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
@@ -19,11 +18,8 @@ from prompt_toolkit.styles import style_from_dict
 # custom control based on TokenListControl
 
 
-def question(name, message, **kwargs):
+def question(message, **kwargs):
     default = kwargs.pop('default', True)
-    filter = kwargs.pop('filter', lambda val: val)  # TODO
-    when = kwargs.pop('when', lambda: True)  # TODO
-    validate = kwargs.pop('validate', lambda: True)  # TODO
 
     # TODO style defaults on detail level
     style = kwargs.pop('style', style_from_dict({
@@ -67,12 +63,14 @@ def question(name, message, **kwargs):
     def _(event):
         raise KeyboardInterrupt()
 
-    @manager.registry.add_binding('n', eager=True)
+    @manager.registry.add_binding('n')
+    @manager.registry.add_binding('N')
     def key_n(event):
         answer = False
         event.cli.set_return_value(False)
 
-    @manager.registry.add_binding('y', eager=True)
+    @manager.registry.add_binding('y')
+    @manager.registry.add_binding('Y')
     def key_y(event):
         answer = True
         event.cli.set_return_value(True)
