@@ -13,7 +13,7 @@ from prompt_toolkit.validation import Validator, ValidationError
 
 
 def question(message, **kwargs):
-    default = kwargs.pop('default', True)
+    default = kwargs.pop('default', None)  # TODO
     validate_prompt = kwargs.pop('validate', None)
     if validate_prompt:
         if issubclass(validate_prompt, Validator):

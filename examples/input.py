@@ -33,13 +33,13 @@ questions = [
         'type': 'input',
         'name': 'first_name',
         'message': 'What\'s your first name',
-        'validate': lambda val: val=='Mark'
+        'default': lambda: 'John'
     },
     {
         'type': 'input',
         'name': 'last_name',
         'message': 'What\'s your last name',
-        'default': lambda: 'Fink'
+        'validate': lambda val: val=='Doe'
     },
     {
         'type': 'input',

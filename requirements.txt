@@ -1,4 +1,1 @@
-#blessings >= 1.5.1
-#readchar == 0.7
-#getkey>=0.6.5
 prompt_toolkit>=1.0.9
