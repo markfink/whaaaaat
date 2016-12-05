@@ -20,7 +20,7 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs \
 
 setup(
     name='inquirerpy',
-    version='0.1.2',
+    version='0.1.3',
     description=(
           'Collection of common interactive command line user interfaces,'
           ' based on Inquirer.js'

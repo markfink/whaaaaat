@@ -9,7 +9,7 @@ from prompt_toolkit.styles import style_from_dict
 from utils import print_json, format_json
 
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 
 def here(p):
