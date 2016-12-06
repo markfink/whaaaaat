@@ -1,0 +1,10 @@
+# TODO
+* missing prompts
+* separator
+* defaults
+* port tests from Inquirer.js
+* better docs
+* readthedocs
+* landing page
+* style PyPi
+* CI

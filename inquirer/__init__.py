@@ -17,7 +17,7 @@ def here(p):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), p))
 
 
-class PromptParameterException(Exception):
+class PromptParameterException(ValueError):
     def __init__(self, message, errors=None):
 
         # Call the base class constructor with the parameters it needs

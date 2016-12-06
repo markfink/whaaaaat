@@ -8,6 +8,7 @@ from prompt_toolkit.token import Token
 from prompt_toolkit.styles import style_from_dict
 from prompt_toolkit.shortcuts import create_prompt_application
 from prompt_toolkit.validation import Validator, ValidationError
+from prompt_toolkit.layout.lexers import SimpleLexer
 
 # use std prompt-toolkit control
 
@@ -38,19 +39,13 @@ def question(message, **kwargs):
         })
 
     def _get_prompt_tokens(cli):
-        tokens = []
-        T = Token
-
-        tokens.append((Token.QuestionMark, '?'))
-        tokens.append((Token.Question, ' %s ' % message))
-        #if ic.answered:
-        #    tokens.append((Token.Answer, ' ' + ic.get_selection()))
-        #else:
-        #    tokens.append((Token.Instruction, ' (Use arrow keys)'))
-        return tokens
-
+        return [
+            (Token.QuestionMark, '?'),
+            (Token.Question, ' %s ' % message)
+        ]
 
     return create_prompt_application(
-        get_prompt_tokens=_get_prompt_tokens, #refresh_interval=.5,
+        get_prompt_tokens=_get_prompt_tokens,
+        lexer=SimpleLexer(Token.Answer),
         **kwargs
     )
