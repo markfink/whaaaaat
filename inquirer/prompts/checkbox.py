@@ -16,6 +16,7 @@ from prompt_toolkit.mouse_events import MouseEventTypes
 from prompt_toolkit.token import Token
 
 from .. import PromptParameterException
+from ..separator import Separator
 from . common import setup_simple_validator, default_style
 
 
@@ -45,13 +46,20 @@ class InquirerControl(TokenListControl):
 
     def _init_choices(self, choices):
         # helper to convert from question format to internal format
-        for c in choices:
-            if 'value' in c:
-                self.choices.append((c['name'], c['value']))
+        searching_first_choice = True
+        for i, c in enumerate(choices):
+            if isinstance(c, Separator):
+                self.choices.append(c)
             else:
-                self.choices.append((c['name'], c['name']))
-            if 'checked' in c and c['checked']:
-                self.selected_options.append(c['name'])
+                if 'value' in c:
+                    self.choices.append((c['name'], c['value']))
+                else:
+                    self.choices.append((c['name'], c['name']))
+                if 'checked' in c and c['checked']:
+                    self.selected_options.append(c['name'])
+                if searching_first_choice:
+                    self.pointer_index = i  # find the first choice
+                    searching_first_choice = False
 
     @property
     def choice_count(self):
@@ -61,48 +69,47 @@ class InquirerControl(TokenListControl):
         tokens = []
         T = Token
 
-        def append(index, label):
-            selected = label in self.selected_options
-            pointed_at = (index == self.pointer_index)
+        def append(index, line):
+            if isinstance(line, Separator):
+                tokens.append((T.Separator, '%s\n' % line))
+            else:
+                line = line[0]
+                selected = (line in self.selected_options)
+                pointed_at = (index == self.pointer_index)
 
-            @if_mousedown
-            def select_item(cli, mouse_event):
-                # bind option with this index to mouse event
-                if label in self.selected_options:
-                    self.selected_options.remove(label)
+                @if_mousedown
+                def select_item(cli, mouse_event):
+                    # bind option with this index to mouse event
+                    if line in self.selected_options:
+                        self.selected_options.remove(line)
+                    else:
+                        self.selected_options.append(line)
+
+                if pointed_at:
+                    tokens.append((T.Pointer, ' \u276f', select_item))  # ' >'
                 else:
-                    self.selected_options.append(label)
-                #self.selected_option_index = index
-                #self.answered = True
-                #cli.set_return_value(None)
+                    tokens.append((T, '  ', select_item))
+                if selected:
+                    tokens.append((T, '\u25cf ', select_item))  # 'o ' - FISHEYE
+                else:
+                    tokens.append((T, '\u25cb ', select_item))  # 'o ' - FISHEYE
 
-            #token = T.Selected if selected else T
+                if pointed_at:
+                    tokens.append((Token.SetCursorPosition, ''))
 
-            if pointed_at:
-                tokens.append((T.Pointer, ' \u276f', select_item))  # ' >'
-            else:
-                tokens.append((T, '  ', select_item))
-            if selected:
-                #tokens.append((T, '\u25c9 '))  # 'o ' - FISHEYE
-                tokens.append((T, '\u25cf ', select_item))  # 'o ' - FISHEYE
-            else:
-                tokens.append((T, '\u25cb ', select_item))  # 'o ' - FISHEYE
-
-            if pointed_at:
-                tokens.append((Token.SetCursorPosition, ''))
-
-            tokens.append((T.Selected if selected else T, label, select_item))
-            tokens.append((T, '\n'))
+                tokens.append((T.Selected if selected else T, line, select_item))
+                tokens.append((T, '\n'))
 
         # prepare the select choices
         for i, choice in enumerate(self.choices):
-            append(i, choice[0])
+            append(i, choice)
         tokens.pop()  # Remove last newline.
         return tokens
 
     def get_selected_values(self):
         # get values not labels
-        return [c[0] for c in self.choices if c[0] in self.selected_options]
+        return [c[0] for c in self.choices if not isinstance(c, Separator) and
+                c[0] in self.selected_options]
 
     @property
     def line_count(self):
@@ -186,6 +193,7 @@ def question(message, **kwargs):
     @manager.registry.add_binding('i', eager=True)
     def invert(event):
         inverted_selection = [c[0] for c in ic.choices if
+                              not isinstance(c, Separator) and
                               c[0] not in ic.selected_options]
         ic.selected_options = inverted_selection
 
@@ -193,7 +201,7 @@ def question(message, **kwargs):
     def all(event):
         all_selected = True  # all choices have been selected
         for c in ic.choices:
-            if c[0] not in ic.selected_options:
+            if not isinstance(c, Separator) and c[0] not in ic.selected_options:
                 # add missing ones
                 ic.selected_options.append(c[0])
                 all_selected = False
@@ -202,13 +210,19 @@ def question(message, **kwargs):
 
     @manager.registry.add_binding(Keys.Down, eager=True)
     def move_cursor_down(event):
-        ic.pointer_index = (
-            (ic.pointer_index + 1) % ic.line_count)
+        def _next():
+            ic.pointer_index = ((ic.pointer_index + 1) % ic.line_count)
+        _next()
+        while isinstance(ic.choices[ic.pointer_index], Separator):
+            _next()
 
     @manager.registry.add_binding(Keys.Up, eager=True)
     def move_cursor_up(event):
-        ic.pointer_index = (
-            (ic.pointer_index - 1) % ic.line_count)
+        def _prev():
+            ic.pointer_index = ((ic.pointer_index - 1) % ic.line_count)
+        _prev()
+        while isinstance(ic.choices[ic.pointer_index], Separator):
+            _prev()
 
     @manager.registry.add_binding(Keys.Enter, eager=True)
     def set_answer(event):

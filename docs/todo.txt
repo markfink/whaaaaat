@@ -1,10 +1,15 @@
 # TODO
-* missing prompts
 * separator
-* defaults
+* defaults (all except checkbox)
 * port tests from Inquirer.js
 * better docs
 * readthedocs
 * landing page
 * style PyPi
 * CI
+* checkbox validate
+* editor prompt
+* expand prompt
+* password prompt
+* rawlist prompt
+* samples for all prompts

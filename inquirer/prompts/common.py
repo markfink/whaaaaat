@@ -59,6 +59,7 @@ def setup_simple_validator(kwargs):
 
 # FIXME style defaults on detail level
 default_style = style_from_dict({
+    Token.Separator: '#6C6C6C',
     Token.QuestionMark: '#5F819D',
     Token.Selected: '',  # default
     Token.Pointer: '#FF9D00 bold',  # AWS orange

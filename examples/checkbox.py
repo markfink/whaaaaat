@@ -5,15 +5,16 @@
 """
 from __future__ import print_function, unicode_literals
 
-from inquirer import style_from_dict, Token, prompt, print_json
+from inquirer import style_from_dict, Token, prompt, print_json, Separator
 
 
 style = style_from_dict({
+    Token.Separator: '#6C6C6C',
     Token.QuestionMark: '#FF9D00 bold',
     Token.Selected: '',  # default
     Token.Pointer: '#FF9D00 bold',  # AWS orange
     Token.Instruction: '',  # default
-     Token.Answer: '#5F819D bold',
+    Token.Answer: '#5F819D bold',
     Token.Question: '',
 })
 
@@ -24,7 +25,7 @@ questions = [
         'message': 'Select toppings',
         'name': 'toppings',
         'choices': [
-            #new inquirer.Separator(' = The Meats = '),
+            Separator(' = The Meats = '),
             {
                 'name': 'Ham'
             },
@@ -34,7 +35,7 @@ questions = [
             {
                 'name': 'Bacon'
             },
-            #new inquirer.Separator(' = The Cheeses = '),
+            Separator(' = The Cheeses = '),
             {
                 'name': 'Mozzarella',
                 'checked': True
@@ -45,7 +46,7 @@ questions = [
             {
                 'name': 'Parmesan'
             },
-            #new inquirer.Separator(' = The usual ='),
+            Separator(' = The usual ='),
             {
                 'name': 'Mushroom'
             },
@@ -55,7 +56,7 @@ questions = [
             {
                 'name': 'Pepperoni'
             },
-            #new inquirer.Separator(' = The extras = '),
+            Separator(' = The extras = '),
             {
                 'name': 'Pineapple'
             },

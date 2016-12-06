@@ -25,3 +25,4 @@ class PromptParameterException(ValueError):
             'You must provide a `%s` value' % message, errors)
 
 from prompt import prompt
+from separator import Separator
