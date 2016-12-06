@@ -14,9 +14,9 @@ from prompt_toolkit.layout.containers import ConditionalContainer, \
 from prompt_toolkit.layout.dimension import LayoutDimension as D
 from prompt_toolkit.mouse_events import MouseEventTypes
 from prompt_toolkit.token import Token
-from prompt_toolkit.styles import style_from_dict
 
 from .. import PromptParameterException
+from . common import setup_validator, default_style
 
 
 # custom control based on TokenListControl
@@ -113,6 +113,7 @@ def question(message, **kwargs):
     # TODO add bottom-bar (Move up and down to reveal more choices)
     # TODO extract common parts for list, checkbox, rawlist, expand
     # TODO disabled
+    # TODO validate
     if not 'choices' in kwargs:
         raise PromptParameterException('choices')
     # this does not implement default, use checked...
@@ -121,17 +122,10 @@ def question(message, **kwargs):
                          'use \'checked\':True\' in choice!')
 
     choices = kwargs.pop('choices', None)
-    default = kwargs.pop('default', 0)  # TODO
+    setup_validator(kwargs)
 
     # TODO style defaults on detail level
-    style = kwargs.pop('style', style_from_dict({
-        Token.QuestionMark: '#5F819D',
-        Token.Selected: '',  # default
-        Token.Pointer: '#FF9D00 bold',  # AWS orange
-        Token.Instruction: '',  # default
-        Token.Answer: '#FF9D00 bold',  # AWS orange
-        Token.Question: 'bold',
-    }))
+    style = kwargs.pop('style', default_style)
 
     ic = InquirerControl(choices)
 
