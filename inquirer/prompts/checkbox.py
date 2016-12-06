@@ -16,7 +16,7 @@ from prompt_toolkit.mouse_events import MouseEventTypes
 from prompt_toolkit.token import Token
 
 from .. import PromptParameterException
-from . common import setup_validator, default_style
+from . common import setup_simple_validator, default_style
 
 
 # custom control based on TokenListControl
@@ -122,7 +122,7 @@ def question(message, **kwargs):
                          'use \'checked\':True\' in choice!')
 
     choices = kwargs.pop('choices', None)
-    setup_validator(kwargs)
+    validator = setup_simple_validator(kwargs)
 
     # TODO style defaults on detail level
     style = kwargs.pop('style', default_style)
@@ -136,8 +136,14 @@ def question(message, **kwargs):
         tokens.append((Token.QuestionMark, '?'))
         tokens.append((Token.Question, ' %s ' % message))
         if ic.answered:
-            #pass
-            tokens.append((Token.Answer, ' done'))
+            nbr_selected = len(ic.selected_options)
+            if nbr_selected == 0:
+                tokens.append((Token.Answer, ' done'))
+            elif nbr_selected == 1:
+                tokens.append((Token.Answer, ' [%s]' % ic.selected_options[0]))
+            else:
+                tokens.append((Token.Answer,
+                               ' done (%d selections)' % nbr_selected))
         else:
             tokens.append((Token.Instruction,
                            ' (<up>, <down> to move, <space> to select, <a> '
@@ -147,7 +153,8 @@ def question(message, **kwargs):
     # assemble layout
     layout = HSplit([
         Window(height=D.exact(1),
-               content=TokenListControl(get_prompt_tokens, align_center=False)),
+               content=TokenListControl(get_prompt_tokens, align_center=False)
+        ),
         ConditionalContainer(
             Window(
                 ic,
@@ -206,6 +213,7 @@ def question(message, **kwargs):
     @manager.registry.add_binding(Keys.Enter, eager=True)
     def set_answer(event):
         ic.answered = True
+        # TODO use validator
         event.cli.set_return_value(ic.get_selected_values())
 
     return Application(

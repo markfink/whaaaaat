@@ -29,6 +29,32 @@ def setup_validator(kwargs):
                             message='invalid input',
                             cursor_position=len(document.text))
             kwargs['validator'] = _InputValidator()
+        return kwargs['validator']
+
+
+def setup_simple_validator(kwargs):
+    # this is an internal helper not meant for public consumption!
+    # note this works on a dictionary
+    # this validates the answer not a buffer
+    # TODO
+    # not sure yet how to deal with the validation result:
+    # https://github.com/jonathanslenders/python-prompt-toolkit/issues/430
+    validate = kwargs.pop('validate', None)
+
+    if not callable(validate):
+        raise ValueError('Here a simple validate function is expected, no class')
+
+    def _validator(answer):
+        verdict = validate(answer)
+        if isinstance(verdict, basestring):
+            raise ValidationError(
+                message=verdict
+                )
+        elif verdict is not True:
+            raise ValidationError(
+                message='invalid input'
+                )
+    return _validator
 
 
 # FIXME style defaults on detail level

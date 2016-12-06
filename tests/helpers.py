@@ -40,7 +40,7 @@ style = style_from_dict({
 })
 
 
-def feed_app_with_input(type, name, message, text, **kwargs):
+def feed_app_with_input(type, message, text, **kwargs):
     """
     Create a CommandLineInterface, feed it with the given user input and return
     the CLI object.
@@ -51,8 +51,7 @@ def feed_app_with_input(type, name, message, text, **kwargs):
     # If the given text doesn't end with a newline, the interface won't finish.
     assert text.endswith('\n')
 
-    application = getattr(prompts, type).question(name, message,
-                                                  **kwargs)
+    application = getattr(prompts, type).question(message, **kwargs)
 
     loop = PosixEventLoop()
     try:
