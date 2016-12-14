@@ -6,6 +6,17 @@ common prompt functionality
 from prompt_toolkit.validation import Validator, ValidationError
 from prompt_toolkit.styles import style_from_dict
 from prompt_toolkit.token import Token
+from prompt_toolkit.mouse_events import MouseEventTypes
+
+
+def if_mousedown(handler):
+    def handle_if_mouse_down(cli, mouse_event):
+        if mouse_event.event_type == MouseEventTypes.MOUSE_DOWN:
+            return handler(cli, mouse_event)
+        else:
+            return NotImplemented
+
+    return handle_if_mouse_down
 
 
 def setup_validator(kwargs):

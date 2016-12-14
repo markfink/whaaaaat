@@ -18,7 +18,7 @@ from prompt_toolkit.token import Token
 from prompt_toolkit.styles import style_from_dict
 
 from .. import PromptParameterException
-
+from .common import if_mousedown
 
 # custom control based on TokenListControl
 # docu here:
@@ -27,22 +27,10 @@ from .. import PromptParameterException
 # https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/docs/pages/full_screen_apps.rst
 
 
-def if_mousedown(handler):
-    def handle_if_mouse_down(cli, mouse_event):
-        if mouse_event.event_type == MouseEventTypes.MOUSE_DOWN:
-            return handler(cli, mouse_event)
-        else:
-            return NotImplemented
-
-    return handle_if_mouse_down
-
-
 class InquirerControl(TokenListControl):
-    selected_option_index = 0
-    answered = False
-    choices = []
-
     def __init__(self, choices, **kwargs):
+        self.selected_option_index = 0
+        self.answered = False
         self.choices = choices
         super(InquirerControl, self).__init__(self._get_choice_tokens,
                                               **kwargs)

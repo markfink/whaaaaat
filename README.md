@@ -1,10 +1,101 @@
+# inquirerpy
+
+A collection of common interactive command line user interfaces.
+
+## Table of Contents
+
+  1. [Documentation](#documentation)
+    1. [Installation](#installation)
+    2. [Examples](#examples)
+    3. [Quickstart](#quickstart)
+    4. [Question Types](#types)
+    5. [Question Properties](#properties)
+    6. [User Interfaces and Styles](#styles)
+  2. [Windows Platform](#windows)
+  3. [Support](#support)
+  4. [Contributing](#contributing)
+  5. [Acknowledgments](#acknowledgements)
+  6. [License](#license)
 
 
-## Question types
+## Goal and Philosophy
+
+**`inquirerpy`** strives to be an easily embeddable and beautiful command line interface for [Python](https://python.org/). **`inquirerpy`** wants to make it easy for existing Inquirer.js users to write immersive command line applications in Python. We are convinced that its feature-set is the most complete for building immersive CLI applications. We also hope that **`inquirerpy`** proves itself useful to Python users.
+
+**`inquirerpy`** should ease the process of
+- providing *error feedback*
+- *asking questions*
+- *parsing* input
+- *validating* answers
+- managing *hierarchical prompts*
+
+**Note:** **`inquirerpy`** provides the user interface and the inquiry session flow.
+> 
+If you're searching for a scaffolding utility, then check out [banana](https://github.com/finklabs/banana), the inquirerpy's sister utility.
+
+
+## Documentation
+<a name="documentation"></a>
+
+
+### Installation
+<a name="installation"></a>
+
+Like most Python packages inquirerpy is available on [PyPi](TODO). Simply use pip to install the inquirerpy package
+
+``` shell
+pip install inquirer
+```
+
+
+### Quickstart
+<a name="quickstart"></a>
+
+Like Inquirer.js, using inquirer is structured into two simple steps:
+
+* you define a **list of questions** and hand them to **prompt**
+* promt returns a **list of answers**
+
+```python
+from __future__ import print_function, unicode_literals
+from inquirer import prompt, print_json
+
+answers = prompt(questions)
+print_json(answers)  # use the answers as input for your app
+```
+
+A good starting point from here is probably the examples section.
+
+
+### Examples
+<a name="examples"></a>
+
+Most of the examples intend to demonstrate a single question type or feature:
+
+* bottom-bar.py
+* expand.py
+* list.py
+* password.py
+* recursive.py
+* when.py
+* checkbox.py
+* hierarchical.py
+* long-list.py
+* pizza.py - demonstrate a using different question types
+* rx-observable-array.py
+* editor.py
+* input.py
+* nested-call.py
+* rawlist.py
+* rx-observable-create.py
+
+
+### Question Types
+<a name="types"></a>
 
 `questions` is a list of questions. Each question has a type.
 
-### List - `{type: 'list'}`
+#### List - `{type: 'list'}`
 
 Take `type`, `name`, `message`, `choices`[, `default`, `filter`] properties. (Note that
 default must be the choice `index` in the array or a choice `value`)
@@ -13,7 +104,7 @@ default must be the choice `index` in the array or a choice `value`)
 
 ---
 
-### Raw List - `{type: 'rawlist'}`
+#### Raw List - `{type: 'rawlist'}`
 
 Take `type`, `name`, `message`, `choices`[, `default`, `filter`] properties. (Note that
 default must the choice `index` in the array)
@@ -22,21 +113,21 @@ default must the choice `index` in the array)
 
 ---
 
-### Expand - `{type: 'expand'}`
+#### Expand - `{type: 'expand'}`
 
 Take `type`, `name`, `message`, `choices`[, `default`] properties. (Note that
 default must be the choice `index` in the array. If `default` key not provided, then `help` will be used as default choice)
 
 Note that the `choices` object will take an extra parameter called `key` for the `expand` prompt. This parameter must be a single (lowercased) character. The `h` option is added by the prompt and shouldn't be defined by the user.
 
-See `examples/expand.js` for a running example.
+See `examples/expand.py` for a running example.
 
 ![Expand prompt closed](/docs/images/expand-prompt-1.png?raw=true)
 ![Expand prompt expanded](/docs/images/expand-prompt-2.png?raw=true)
 
 ---
 
-### Checkbox - `{type: 'checkbox'}`
+#### Checkbox - `{type: 'checkbox'}`
 
 Take `type`, `name`, `message`, `choices`[, `filter`, `validate`, `default`] properties. `default` is expected to be an Array of the checked choices value.
 
@@ -48,7 +139,7 @@ Choices whose property `disabled` is truthy will be unselectable. If `disabled` 
 
 ---
 
-### Confirm - `{type: 'confirm'}`
+#### Confirm - `{type: 'confirm'}`
 
 Take `type`, `name`, `message`[, `default`] properties. `default` is expected to be a boolean if used.
 
@@ -56,7 +147,7 @@ Take `type`, `name`, `message`[, `default`] properties. `default` is expected to
 
 ---
 
-### Input - `{type: 'input'}`
+#### Input - `{type: 'input'}`
 
 Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties.
 
@@ -64,7 +155,7 @@ Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties.
 
 ---
 
-### Password - `{type: 'password'}`
+#### Password - `{type: 'password'}`
 
 Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties.
 
@@ -72,14 +163,15 @@ Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties.
 
 ---
 
-### Editor - `{type: 'editor'}`
+#### Editor - `{type: 'editor'}`
 
 Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties
 
 Launches an instance of the users preferred editor on a temporary file. Once the user exits their editor, the contents of the temporary file are read in as the result. The editor to use is determined by reading the $VISUAL or $EDITOR environment variables. If neither of those are present, notepad (on Windows) or vim (Linux or Mac) is used.
 
 
-## Question values
+### Question Properties
+<a name="properties"></a>
 
 A question is a dictionary containing question related values:
 
@@ -94,7 +186,36 @@ A question is a dictionary containing question related values:
 * pageSize: (Number) Change the number of lines that will be rendered when using list, rawList, expand or checkbox.
 
 
-##Contributing
+### User Interfaces and Styles
+<a name="styles"></a>
+
+TODO
+
+
+## Windows Platform
+<a name="windows"></a>
+
+**`inquirerpy`** is build on prompt_toolkit which is cross platform, and everything that you build on top should run fine on both Unix and Windows systems. On Windows, it uses a different event loop (WaitForMultipleObjects instead of select), and another input and output system. (Win32 APIs instead of pseudo-terminals and VT100.)
+
+It's worth noting that the implementation is a "best effort of what is possible". Both Unix and Windows terminals have their limitations. But in general, the Unix experience will still be a little better.
+
+For Windows, it's recommended to use either cmder or conemu.
+
+
+## Support
+<a name="support"></a>
+
+Most of the questions are probably related to using a question type or feature. Please lookup and study the appropriate examples.
+
+Issue on Github TODO link
+
+For many issues like for example common Python programming issues stackoverflow might be a good place to search for an answer.  TODO link
+
+Visit the finklabs slack channel for announcements and news. TODO link
+
+
+## Contributing
+<a name="contributing"></a>
 
 Unit test Unit test are written using pytest. Please add a unit test for every new feature or bug fix.
 
@@ -103,20 +224,13 @@ Documentation Add documentation for every API change. Feel free to send typo fix
 We're looking to offer good support for multiple prompts and environments. If you want to help, we'd like to keep a list of testers for each terminal/OS so we can contact you and get feedback before release. Let us know if you want to be added to the list.
 
 
-## About Windows support
-
-prompt_toolkit is cross platform, and everything that you build on top should run fine on both Unix and Windows systems. On Windows, it uses a different event loop (WaitForMultipleObjects instead of select), and another input and output system. (Win32 APIs instead of pseudo-terminals and VT100.)
-
-It's worth noting that the implementation is a "best effort of what is possible". Both Unix and Windows terminals have their limitations. But in general, the Unix experience will still be a little better.
-
-For Windows, it's recommended to use either cmder or conemu.
-
-
 ## Acknowledgments
+<a name="acknowledgements"></a>
 
 Many thanks to our friends at Inquirer.js. We think they did a great job developing the tooling for nodejs.
 
 
 ## License
+<a name="license"></a>
 
 Copyright (c) 2016 Mark Fink (twitter: @markfink) Licensed under the MIT license.

@@ -18,34 +18,24 @@ from prompt_toolkit.token import Token
 from .. import PromptParameterException
 from ..separator import Separator
 from . common import setup_simple_validator, default_style
+from .common import if_mousedown
 
 
 # custom control based on TokenListControl
 
 
-def if_mousedown(handler):
-    def handle_if_mouse_down(cli, mouse_event):
-        if mouse_event.event_type == MouseEventTypes.MOUSE_DOWN:
-            return handler(cli, mouse_event)
-        else:
-            return NotImplemented
-
-    return handle_if_mouse_down
-
-
 class InquirerControl(TokenListControl):
-    pointer_index = 0
-    selected_options = []  # list of names
-    answered = False
-    choices = []  # list (name, value)
-
     def __init__(self, choices, **kwargs):
+        self.pointer_index = 0
+        self.selected_options = []  # list of names
+        self.answered = False
         self._init_choices(choices)
         super(InquirerControl, self).__init__(self._get_choice_tokens,
                                               **kwargs)
 
     def _init_choices(self, choices):
         # helper to convert from question format to internal format
+        self.choices = []  # list (name, value)
         searching_first_choice = True
         for i, c in enumerate(choices):
             if isinstance(c, Separator):
