@@ -31,8 +31,8 @@ class InquirerControl(TokenListControl):
                                               **kwargs)
 
     def _init_choices(self, choices):
-        self.choices = []  # list (key, name, value)
         # helper to convert from question format to internal format
+        self.choices = []  # list (key, name, value)
         searching_first_choice = True
         key = 1  # used for numeric keys
         for i, c in enumerate(choices):
@@ -42,12 +42,6 @@ class InquirerControl(TokenListControl):
                 if isinstance(c, basestring):
                     self.choices.append((key, c, c))
                     key += 1
-                #if 'value' in c:
-                #    self.choices.append((c['name'], c['value']))
-                #else:
-                #    self.choices.append((c['name'], c['name']))
-                #if 'checked' in c and c['checked']:
-                #    self.selected_options.append(c['name'])
                 if searching_first_choice:
                     self.pointer_index = i  # find the first choice
                     searching_first_choice = False
@@ -104,6 +98,8 @@ def question(message, **kwargs):
     #                     'use \'checked\':True\' in choice!')
 
     choices = kwargs.pop('choices', None)
+    if len(choices) > 9:
+        raise ValueError('rawlist supports only a maximum of 9 choices!')
 
     # TODO style defaults on detail level
     style = kwargs.pop('style', default_style)
@@ -114,24 +110,19 @@ def question(message, **kwargs):
         tokens = []
         T = Token
 
-        tokens.append((Token.QuestionMark, '?'))
-        tokens.append((Token.Question, ' %s ' % message))
+        tokens.append((T.QuestionMark, '?'))
+        tokens.append((T.Question, ' %s ' % message))
         if ic.answered:
-            tokens.append((Token.Answer, ' %s' % ic.get_selected_value()))
+            tokens.append((T.Answer, ' %s' % ic.get_selected_value()))
         return tokens
 
     # assemble layout
     layout = HSplit([
         Window(height=D.exact(1),
-               content=TokenListControl(get_prompt_tokens, align_center=False)
+               content=TokenListControl(get_prompt_tokens)
         ),
         ConditionalContainer(
-            Window(
-                ic,
-                width=D.exact(43),
-                height=D(min=3),
-                scroll_offsets=ScrollOffsets(top=1, bottom=1)
-            ),
+            Window(ic),
             filter=~IsDone()
         )
     ])
@@ -145,12 +136,15 @@ def question(message, **kwargs):
         raise KeyboardInterrupt()
 
     # add key bindings for choices
-    #for i, c in enumerate(ic.choices):
-    #    if not isinstance(c, Separator) and isinstance(c[2], int):
-    #        key = c[2]
-    #        @manager.registry.add_binding(key, eager=True)
-    #        def toggle(event):
-    #            pointed_choice = i
+    for i, c in enumerate(ic.choices):
+        if not isinstance(c, Separator):
+            def _reg_binding(i, keys):
+                # trick out late evaluation with a "function factory":
+                # http://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
+                @manager.registry.add_binding(keys, eager=True)
+                def select_choice(event):
+                    ic.pointer_index = i
+            _reg_binding(i, '%d' % c[0])
 
     @manager.registry.add_binding(Keys.Enter, eager=True)
     def set_answer(event):

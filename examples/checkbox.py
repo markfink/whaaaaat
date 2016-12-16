@@ -74,5 +74,4 @@ questions = [
 ]
 
 answers = prompt(questions, style=style)
-answers2 = prompt(questions, style=style)
-print_json(answers2)
+print_json(answers)

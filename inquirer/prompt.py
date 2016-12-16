@@ -61,6 +61,7 @@ def prompt(questions, answers=None, **kwargs):
                 true_color=true_color,
                 refresh_interval=refresh_interval,
                 eventloop=eventloop)
+
             if answer is not None:
                 if filter:
                     try:

@@ -12,7 +12,6 @@ from prompt_toolkit.layout.controls import TokenListControl
 from prompt_toolkit.layout.containers import ConditionalContainer, \
     ScrollOffsets, HSplit
 from prompt_toolkit.layout.dimension import LayoutDimension as D
-from prompt_toolkit.mouse_events import MouseEventTypes
 from prompt_toolkit.token import Token
 
 from .. import PromptParameterException

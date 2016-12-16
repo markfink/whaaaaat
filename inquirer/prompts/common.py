@@ -19,6 +19,7 @@ def if_mousedown(handler):
     return handle_if_mouse_down
 
 
+# TODO probably better to use base.Condition
 def setup_validator(kwargs):
     # this is an internal helper not meant for public consumption!
     # note this works on a dictionary
