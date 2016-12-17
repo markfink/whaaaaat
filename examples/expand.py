@@ -11,7 +11,8 @@ from inquirer import style_from_dict, Token, prompt, print_json, Separator
 style = style_from_dict({
     Token.Separator: '#6C6C6C',
     Token.QuestionMark: '#FF9D00 bold',
-    Token.Selected: '',  # default
+    #Token.Selected: '',  # default
+    Token.Selected: '#5F819D',
     Token.Pointer: '#FF9D00 bold',  # AWS orange
     Token.Instruction: '',  # default
     Token.Answer: '#5F819D bold',
@@ -21,9 +22,10 @@ style = style_from_dict({
 
 questions = [
     {
-        'type': 'checkbox',
+        'type': 'expand',
         'message': 'Conflict on `file.js`: ',
         'name': 'overwrite',
+        'default': 'a',
         'choices': [
             {
                 'key': 'y',

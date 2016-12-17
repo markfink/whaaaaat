@@ -82,13 +82,7 @@ def question(message, **kwargs):
     default = kwargs.pop('default', 0)  # TODO
 
     # TODO style defaults on detail level
-    style = kwargs.pop('style', style_from_dict({
-        Token.QuestionMark: '#5F819D',
-        Token.Selected: '#FF9D00',  # AWS orange
-        Token.Instruction: '',  # default
-        Token.Answer: '#FF9D00 bold',  # AWS orange
-        Token.Question: 'bold',
-    }))
+    style = kwargs.pop('style', default_style)
 
     ic = InquirerControl(choices)
 

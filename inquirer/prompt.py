@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 import prompts
-from prompts import list, confirm, input, checkbox, rawlist
+from prompts import list, confirm, input, checkbox, rawlist, expand
 from prompt_toolkit.shortcuts import run_application
 
 from . import PromptParameterException

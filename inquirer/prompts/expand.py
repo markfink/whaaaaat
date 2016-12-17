@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-`rawlist` type question
+`expand` type question
 """
 from __future__ import print_function, unicode_literals
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import Window
-from prompt_toolkit.filters import IsDone
+from prompt_toolkit.filters import IsDone, Condition
 from prompt_toolkit.layout.controls import TokenListControl
 from prompt_toolkit.layout.containers import ConditionalContainer, \
     ScrollOffsets, HSplit
@@ -23,18 +23,21 @@ from .common import if_mousedown
 # custom control based on TokenListControl
 
 class InquirerControl(TokenListControl):
-    def __init__(self, choices, **kwargs):
+    def __init__(self, choices, default=None, **kwargs):
         self.pointer_index = 0
         self.answered = False
-        self._init_choices(choices)
+        self._init_choices(choices, default)
+        self._help_active = False  # help is activated via 'h' key
         super(InquirerControl, self).__init__(self._get_choice_tokens,
                                               **kwargs)
 
-    def _init_choices(self, choices):
+    def _init_choices(self, choices, default=None):
         # helper to convert from question format to internal format
+
         self.choices = []  # list (key, name, value)
-        searching_first_choice = True
-        key = 1  # used for numeric keys
+
+        if not default:
+            default = 'h'
         for i, c in enumerate(choices):
             if isinstance(c, Separator):
                 self.choices.append(c)
@@ -42,9 +45,20 @@ class InquirerControl(TokenListControl):
                 if isinstance(c, basestring):
                     self.choices.append((key, c, c))
                     key += 1
-                if searching_first_choice:
-                    self.pointer_index = i  # found the first choice
-                    searching_first_choice = False
+                else:
+                    key = c.get('key')
+                    name = c.get('name')
+                    value = c.get('value', name)
+                    if default and default == key:
+                        self.pointer_index = i
+                        key = key.upper()  # default key is in uppercase
+                    self.choices.append((key, name, value))
+        # append the help choice
+        key = 'h'
+        if not default:
+            self.pointer_index = len(self.choices)
+            key = key.upper()  # default key is in uppercase
+        self.choices.append((key, 'Help, list all options', None))
 
     @property
     def choice_count(self):
@@ -68,18 +82,22 @@ class InquirerControl(TokenListControl):
                     self.pointer_index = index
 
                 if pointed_at:
-                    tokens.append((T.Selected, '  %d) %s' % (key, line),
+                    tokens.append((T.Selected, '  %s) %s' % (key, line),
                                    select_item))
                 else:
-                    tokens.append((T, '  %d) %s' % (key, line),
+                    tokens.append((T, '  %s) %s' % (key, line),
                                    select_item))
-
                 tokens.append((T, '\n'))
 
-        # prepare the select choices
-        for i, choice in enumerate(self.choices):
-            _append(i, choice)
-        tokens.append((T, '  Answer: %d' % self.choices[self.pointer_index][0]))
+        if self._help_active:
+            # prepare the select choices
+            for i, choice in enumerate(self.choices):
+                _append(i, choice)
+            tokens.append((T, '  Answer: %s' %
+                           self.choices[self.pointer_index][0]))
+        else:
+            tokens.append((T.Pointer, '>> '))
+            tokens.append((T, self.choices[self.pointer_index][1]))
         return tokens
 
     def get_selected_value(self):
@@ -89,22 +107,17 @@ class InquirerControl(TokenListControl):
 
 def question(message, **kwargs):
     # TODO extract common parts for list, checkbox, rawlist, expand
+    # TODO up, down navigation
     if not 'choices' in kwargs:
         raise PromptParameterException('choices')
-    # this does not implement default, use checked...
-    # TODO
-    #if 'default' in kwargs:
-    #    raise ValueError('rawlist does not implement \'default\' '
-    #                     'use \'checked\':True\' in choice!')
 
     choices = kwargs.pop('choices', None)
-    if len(choices) > 9:
-        raise ValueError('rawlist supports only a maximum of 9 choices!')
+    default = kwargs.pop('default', None)
 
     # TODO style defaults on detail level
     style = kwargs.pop('style', default_style)
 
-    ic = InquirerControl(choices)
+    ic = InquirerControl(choices, default)
 
     def get_prompt_tokens(cli):
         tokens = []
@@ -112,9 +125,16 @@ def question(message, **kwargs):
 
         tokens.append((T.QuestionMark, '?'))
         tokens.append((T.Question, ' %s ' % message))
-        if ic.answered:
+        if not ic.answered:
+            tokens.append((T.Instruction, ' (%s)' % ''.join(
+                [k[0] for k in ic.choices if not isinstance(k, Separator)])))
+        else:
             tokens.append((T.Answer, ' %s' % ic.get_selected_value()))
         return tokens
+
+    #@Condition
+    #def is_help_active(cli):
+    #    return ic._help_active
 
     # assemble layout
     layout = HSplit([
@@ -123,7 +143,8 @@ def question(message, **kwargs):
         ),
         ConditionalContainer(
             Window(ic),
-            filter=~IsDone()
+            #filter=is_help_active & ~IsDone()  # ~ bitwise inverse
+            filter=~IsDone()  # ~ bitwise inverse
         )
     ])
 
@@ -144,7 +165,15 @@ def question(message, **kwargs):
                 @manager.registry.add_binding(keys, eager=True)
                 def select_choice(event):
                     ic.pointer_index = i
-            _reg_binding(i, '%d' % c[0])
+            if c[0] not in ['h', 'H']:
+                _reg_binding(i, c[0])
+                if c[0].isupper():
+                    _reg_binding(i, c[0].lower())
+
+    @manager.registry.add_binding('H', eager=True)
+    @manager.registry.add_binding('h', eager=True)
+    def help_choice(event):
+        ic._help_active = True
 
     @manager.registry.add_binding(Keys.Enter, eager=True)
     def set_answer(event):
