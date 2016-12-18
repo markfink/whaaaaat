@@ -1,7 +1,6 @@
 # TODO
-* separator
 * defaults (all except checkbox)
-* port tests from Inquirer.js
+* migrate tests from Inquirer.js
 * better docs
 * readthedocs
 * landing page
@@ -11,5 +10,5 @@
 * editor prompt
 * expand prompt
 * password prompt
-* rawlist prompt
 * samples for all prompts
+* bottom-bar

@@ -18,7 +18,7 @@ from prompt_toolkit.token import Token
 from prompt_toolkit.styles import style_from_dict
 
 from .. import PromptParameterException
-from .common import if_mousedown
+from .common import if_mousedown, default_style
 
 # custom control based on TokenListControl
 # docu here:
@@ -75,6 +75,7 @@ class InquirerControl(TokenListControl):
 
 
 def question(message, **kwargs):
+    # TODO disabled, dict choices
     if not 'choices' in kwargs:
         raise PromptParameterException('choices')
 

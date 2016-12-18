@@ -16,7 +16,8 @@ def example_pizza():
 
 def test_select_first_choice(example_pizza):
     example_pizza.send(keys.ENTER)
-    example_pizza.expect('.*What size do you need.*', timeout=1)
+    example_pizza.expect('.*What\'s your phone number.*', timeout=1)
+    example_pizza.send('11111111111')
     example_pizza.send(keys.ENTER)
     example_pizza.expect('.*What size do you need.*', timeout=1)
     example_pizza.send(keys.ENTER)

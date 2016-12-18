@@ -24,5 +24,6 @@ class PromptParameterException(ValueError):
         super(PromptParameterException, self).__init__(
             'You must provide a `%s` value' % message, errors)
 
-from prompt import prompt
-from separator import Separator
+from .prompt import prompt
+from .separator import Separator
+from .prompts.common import default_style

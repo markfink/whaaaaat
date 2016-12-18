@@ -14,7 +14,7 @@ from prompt_toolkit.layout.lexers import SimpleLexer
 
 
 def question(message, **kwargs):
-    default = kwargs.pop('default', None)  # TODO
+    default = kwargs.pop('default', '')
     validate_prompt = kwargs.pop('validate', None)
     if validate_prompt:
         if issubclass(validate_prompt, Validator):
@@ -22,9 +22,12 @@ def question(message, **kwargs):
         elif callable(validate_prompt):
             class _InputValidator(Validator):
                 def validate(self, document):
-                    if not validate_prompt(document.text):
+                    verdict = validate_prompt(document.text)
+                    if not verdict == True:
+                        if verdict == False:
+                            verdict = 'invalid input'
                         raise ValidationError(
-                            message='invalid input',
+                            message=verdict,
                             cursor_position=len(document.text))
             kwargs['validator'] = _InputValidator()
 
@@ -47,5 +50,6 @@ def question(message, **kwargs):
     return create_prompt_application(
         get_prompt_tokens=_get_prompt_tokens,
         lexer=SimpleLexer(Token.Answer),
+        default=default,
         **kwargs
     )

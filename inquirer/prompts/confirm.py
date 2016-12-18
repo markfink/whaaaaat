@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-`confirm` type question
+confirm type question
 """
 from __future__ import print_function, unicode_literals
 from prompt_toolkit.application import Application
@@ -19,6 +19,7 @@ from prompt_toolkit.styles import style_from_dict
 
 
 def question(message, **kwargs):
+    # TODO need ENTER confirmation
     default = kwargs.pop('default', True)
 
     # TODO style defaults on detail level

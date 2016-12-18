@@ -2,6 +2,8 @@
 """
 Common test functionality
 """
+import regex
+
 from prompt_toolkit.eventloop.posix import PosixEventLoop
 from prompt_toolkit.input import PipeInput
 from prompt_toolkit.interface import CommandLineInterface
@@ -9,6 +11,7 @@ from prompt_toolkit.output import DummyOutput
 
 from inquirer import style_from_dict, Token, prompt, print_json
 from inquirer import prompts
+from inquirer.utils import colorize_json, format_json
 
 
 # http://code.activestate.com/recipes/52308-the-simple-but-handy-collector-of-a-bunch-of-named/?in=user-97991
@@ -67,3 +70,9 @@ def feed_app_with_input(type, message, text, **kwargs):
     finally:
         loop.close()
         inp.close()
+
+
+def remove_ansi_escape_sequences(text):
+    # http://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+    # also clean up the line endings
+    return regex.sub(r'(\x9b|\x1b\[)[0-?]*[ -\/]*[@-~]|\ *\r', '', text)

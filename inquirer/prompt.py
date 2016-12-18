@@ -9,6 +9,8 @@ from . import PromptParameterException
 
 
 def prompt(questions, answers=None, **kwargs):
+    if isinstance(questions, dict):
+        questions = [questions]
     answers = answers or {}
 
     patch_stdout = kwargs.pop('patch_stdout', False)
