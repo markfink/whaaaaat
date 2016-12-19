@@ -12,3 +12,4 @@
 * password prompt
 * samples for all prompts
 * bottom-bar
+* Python 3 support
