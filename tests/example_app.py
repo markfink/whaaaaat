@@ -3,7 +3,7 @@
 example app to test running an app as subprocess within pty
 """
 from __future__ import print_function, unicode_literals
-
+import time
 
 # http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 class bcolors:
@@ -19,6 +19,7 @@ class bcolors:
 
 def main():
     print('hi, there!')
+    time.sleep(0.010)
     print('let\'s get to know each other better...')
     name = raw_input("Please enter your name: ")
     print(bcolors.BOLD + bcolors.UNDERLINE + 'Hi %s, have a nice day!' % name +

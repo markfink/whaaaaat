@@ -6,8 +6,12 @@ import os
 import sys
 import regex
 import codecs
+import time
+#import fcntl
+import select
 
 from ptyprocess import PtyProcess
+import regex
 
 from prompt_toolkit.eventloop.posix import PosixEventLoop
 from prompt_toolkit.input import PipeInput
@@ -120,6 +124,8 @@ class SimplePty(PtyProcess):
         The size argument still refers to bytes, not unicode code points.
         """
         b = super(SimplePty, self).read(size)
+        if not b:
+            return ''
         if self.skip_cr:
             b = b.replace('\r', '')
         if self.skip_ansi:
@@ -133,22 +139,20 @@ class SimplePty(PtyProcess):
         terminal was closed.
         note: this is a specialized version that does not have \r\n at the end
         """
+        # TODO implement a timeout
         b = super(SimplePty, self).readline().strip()
         if self.skip_ansi:
             b = remove_ansi_escape_sequences(b)
         return self.decoder.decode(b, final=False)
 
-    def write(self, s, skip_echo=True):
+    def write(self, s):
         """Write the unicode string ``s`` to the pseudoterminal.
-        note: this is special since it does consume the echo from stdout already.
         This intends to make tests a little less verbose.
 
         Returns the number of bytes written.
         """
         b = s.encode(self.encoding)
         count = super(SimplePty, self).write(b)
-        if skip_echo:
-            assert self.read() == b
         return count
 
     def writeline(self, s):
@@ -163,86 +167,67 @@ class SimplePty(PtyProcess):
 
     @classmethod
     def spawn(
-            cls, argv, cwd=None, env=None, echo=True, preexec_fn=None,
-            dimensions=(24, 80), skip_cr=True, skip_ansi=True):
+            cls, argv, cwd=None, env=None, echo=False, preexec_fn=None,
+            dimensions=(24, 80), skip_cr=True, skip_ansi=True, timeout=1.0):
+        """
+
+        :param argv:
+        :param cwd:
+        :param env:
+        :param echo: default is False so we do not have to deal with the echo
+        :param preexec_fn:
+        :param dimensions:
+        :param skip_cr: skip charriage return '/r' characters when comparing equality
+        :param skip_ansi: skip ansi escape sequences when comparing equality
+        :param timeout: read timeout in seconds
+        :return: subprocess handle
+        """
         if env is None:
             env = os.environ
         inst = super(SimplePty, cls).spawn(argv, cwd, env, echo, preexec_fn,
                                            dimensions)
         inst.skip_cr = skip_cr
         inst.skip_ansi = skip_ansi
+        inst.timeout = timeout  # in seconds
         return inst
+
+    def equals(self, text):
+        """Read until equals text or timeout."""
+        # inspired by pexpect/pty_spawn and  pexpect/expect.py expect_loop
+        end_time = time.time() + self.timeout
+        buf = ''
+        while (end_time - time.time()) > 0.0:
+            # switch to nonblocking read
+            reads, _, _ = select.select([self.fd], [], [], end_time - time.time())
+            if len(reads) > 0:
+                buf += self.read()
+                if buf == text:
+                    return True
+            else:
+                # do not eat up CPU when waiting for the timeout to expire
+                time.sleep(self.timeout/10)
+        return False
+
+    def equals_regex(self, pattern):
+        """Read until matches pattern or timeout."""
+        # inspired by pexpect/pty_spawn and  pexpect/expect.py expect_loop
+        end_time = time.time() + self.timeout
+        buf = ''
+        prog = regex.compile(pattern)
+        while (end_time - time.time()) > 0.0:
+            # switch to nonblocking read
+            reads, _, _ = select.select([self.fd], [], [], end_time - time.time())
+            if len(reads) > 0:
+                buf += self.read()
+                if prog.match(buf):
+                    return True
+            else:
+                # do not eat up CPU when waiting for the timeout to expire
+                time.sleep(self.timeout/10)
+        return False
 
     def __eq__(self, other):
         """Syntactic sugar to avoid calling read() all the time"""
         if isinstance(other, basestring):
-            return self.read() == other
+            return self.equals(other)
         return False
-
-    '''
-    # from pexpect/pty_spawn in case we need the nonblocking/timeout read
-    # or see expect/expect.py expect_loop
-    def read_nonblocking(self, size=1, timeout=-1):
-        """This reads at most size characters from the child application. It
-        includes a timeout. If the read does not complete within the timeout
-        period then a TIMEOUT exception is raised. If the end of file is read
-        then an EOF exception will be raised.  If a logfile is specified, a
-        copy is written to that log.
-
-        If timeout is None then the read may block indefinitely.
-        If timeout is -1 then the self.timeout value is used. If timeout is 0
-        then the child is polled and if there is no data immediately ready
-        then this will raise a TIMEOUT exception.
-
-        The timeout refers only to the amount of time to read at least one
-        character. This is not affected by the 'size' parameter, so if you call
-        read_nonblocking(size=100, timeout=30) and only one character is
-        available right away then one character will be returned immediately.
-        It will not wait for 30 seconds for another 99 characters to come in.
-
-        This is a wrapper around os.read(). It uses select.select() to
-        implement the timeout. """
-
-        if self.closed:
-            raise ValueError('I/O operation on closed file.')
-
-        if timeout == -1:
-            timeout = self.timeout
-
-        # Note that some systems such as Solaris do not give an EOF when
-        # the child dies. In fact, you can still try to read
-        # from the child_fd -- it will block forever or until TIMEOUT.
-        # For this case, I test isalive() before doing any reading.
-        # If isalive() is false, then I pretend that this is the same as EOF.
-        if not self.isalive():
-            # timeout of 0 means "poll"
-            r, w, e = select_ignore_interrupts([self.child_fd], [], [], 0)
-            if not r:
-                self.flag_eof = True
-                raise EOF('End Of File (EOF). Braindead platform.')
-        elif self.__irix_hack:
-            # Irix takes a long time before it realizes a child was terminated.
-            # FIXME So does this mean Irix systems are forced to always have
-            # FIXME a 2 second delay when calling read_nonblocking? That sucks.
-            r, w, e = select_ignore_interrupts([self.child_fd], [], [], 2)
-            if not r and not self.isalive():
-                self.flag_eof = True
-                raise EOF('End Of File (EOF). Slow platform.')
-
-        r, w, e = select_ignore_interrupts([self.child_fd], [], [], timeout)
-
-        if not r:
-            if not self.isalive():
-                # Some platforms, such as Irix, will claim that their
-                # processes are alive; timeout on the select; and
-                # then finally admit that they are not alive.
-                self.flag_eof = True
-                raise EOF('End of File (EOF). Very slow platform.')
-            else:
-                raise TIMEOUT('Timeout exceeded.')
-
-        if self.child_fd in r:
-            return super(spawn, self).read_nonblocking(size)
-
-        raise ExceptionPexpect('Reached an unexpected state.')  # pragma: no cover
-    '''
