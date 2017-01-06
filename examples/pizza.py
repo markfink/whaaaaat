@@ -6,8 +6,8 @@
 from __future__ import print_function, unicode_literals
 import regex
 
-from inquirer import style_from_dict, Token, prompt, print_json
-from inquirer import Validator, ValidationError
+from whaaaaat import style_from_dict, Token, prompt, print_json
+from whaaaaat import Validator, ValidationError
 
 
 style = style_from_dict({

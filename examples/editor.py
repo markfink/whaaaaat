@@ -4,8 +4,8 @@
 """
 from __future__ import print_function, unicode_literals
 
-from inquirer import style_from_dict, Token, prompt, print_json
-from inquirer import Validator, ValidationError, default_style
+from whaaaaat import style_from_dict, Token, prompt, print_json
+from whaaaaat import Validator, ValidationError, default_style
 
 
 questions = [

@@ -4,7 +4,7 @@ When example
 """
 from __future__ import print_function, unicode_literals
 
-from inquirer import style_from_dict, Token, prompt, print_json, default_style
+from whaaaaat import style_from_dict, Token, prompt, print_json, default_style
 
 style = style_from_dict({
     Token.QuestionMark: '#FF9D00 bold',
@@ -36,13 +36,14 @@ questions = [
         'type': 'confirm',
         'name': 'pizza',
         'message': 'Ok... Do you like pizza?',
+        'default': False,  # only for demo :)
         'when': dislikes_bacon
     },
     {
         'type': 'input',
         'name': 'favorite',
         'message': 'Whew! What is your favorite type of pizza?',
-        'when': lambda answers: 'pizza' in answers
+        'when': lambda answers: answers.get('pizza', False)
     }
 ]
 

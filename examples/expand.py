@@ -5,7 +5,7 @@
 """
 from __future__ import print_function, unicode_literals
 
-from inquirer import style_from_dict, Token, prompt, print_json, Separator
+from whaaaaat import style_from_dict, Token, prompt, print_json, Separator
 
 
 style = style_from_dict({

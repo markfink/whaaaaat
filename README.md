@@ -44,7 +44,7 @@ If you're searching for a scaffolding utility, then check out [banana](https://g
 Like most Python packages inquirerpy is available on [PyPi](TODO). Simply use pip to install the inquirerpy package
 
 ``` shell
-pip install inquirer
+pip install inquirerpy
 ```
 
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import textwrap
-
+import time
 import pytest
 
 from .helpers import remove_ansi_escape_sequences, SimplePty
@@ -14,39 +14,53 @@ def test_remove_ansi_escape_sequences():
 
 @pytest.fixture
 def example_app():
-    # users are expected to sendintr() to subprocess if it does not terminate itself
     p = SimplePty.spawn(['python', 'tests/example_app.py'])
     yield p
-    p.wait()  # without the wait the coverage info never arrives
+    # it takes some time to collect the coverage data
+    # if the main process exits too early the coverage data is not available
+    time.sleep(p.delayafterterminate)
+    p.sendintr()  # in case the subprocess was not ended by the test
+    p.wait()  # without wait() the coverage info never arrives
 
 
 def test_example_app(example_app):
     # test the helper class plus demonstrate how to use it...
-    assert example_app == textwrap.dedent("""\
+    example_app.expect(textwrap.dedent("""\
         hi, there!
         let's get to know each other better...
-        Please enter your name: """)
+        Please enter your name: """))
     example_app.writeline('Stuart')
     assert example_app.readline() == 'Hi Stuart, have a nice day!'
+    assert example_app.readline() == 'It was a pleasure talking to you...'
+
+
+def test_example_app_dialog_style(example_app):
+    # test the helper class plus demonstrate how to use it...
+    example_app.expect(textwrap.dedent("""\
+        hi, there!
+        let's get to know each other better...
+        Please enter your name: """))
+    example_app.writeline('Stuart')
+    example_app.expect(textwrap.dedent("""\
+        Hi Stuart, have a nice day!
+        It was a pleasure talking to you...
+        """))
 
 
 def test_example_app_no_match(example_app):
-    # test the helper class plus demonstrate how to use it...
-    assert not example_app == 'babadam'
-    example_app.writeline('Stuart')
-    assert example_app.readline() == 'Hi Stuart, have a nice day!'
+    # note: the app does not run to its end so the fixture handles cleanup
+    with pytest.raises(AssertionError):
+        example_app.expect('babadam')
 
 
 def test_example_app_regex(example_app):
-    assert example_app.equals_regex('hi, there!\n.*\nPlease enter your name: ')
+    assert example_app.expect_regex('hi, there!\n.*\nPlease enter your name: ')
     example_app.writeline('Stuart')
     assert example_app.readline() == 'Hi Stuart, have a nice day!'
 
 
 def test_example_app_regex_no_match(example_app):
-    assert not example_app.equals_regex('babadam')
-    # note:
-    # here we demonstrate how to exit the subprocess in case it is not expected
-    # to close
-    example_app.sendintr()
+    # note: the app does not run to its end so the fixture handles cleanup
+    with pytest.raises(AssertionError):
+        assert not example_app.expect_regex('babadam')
 

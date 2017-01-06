@@ -24,6 +24,7 @@ def main():
     name = raw_input("Please enter your name: ")
     print(bcolors.BOLD + bcolors.UNDERLINE + 'Hi %s, have a nice day!' % name +
           bcolors.ENDC)
+    print('It was a pleasure talking to you...')
 
 
 if __name__ == '__main__':

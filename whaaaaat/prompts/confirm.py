@@ -6,13 +6,11 @@ from __future__ import print_function, unicode_literals
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout.containers import Window, ScrollOffsets
+from prompt_toolkit.layout.containers import Window, ScrollOffsets, HSplit
 from prompt_toolkit.layout.controls import TokenListControl
 from prompt_toolkit.layout.dimension import LayoutDimension as D
 from prompt_toolkit.token import Token
 from prompt_toolkit.styles import style_from_dict
-
-#from .. import PromptParameterException
 
 
 # custom control based on TokenListControl
@@ -30,7 +28,7 @@ def question(message, **kwargs):
         Token.Answer: '#FF9D00 bold',  # AWS orange
         Token.Question: 'bold',
     }))
-    answer = None
+    status = {'answer': None}
 
     def get_prompt_tokens(cli):
         tokens = []
@@ -38,10 +36,9 @@ def question(message, **kwargs):
 
         tokens.append((Token.QuestionMark, '?'))
         tokens.append((Token.Question, ' %s ' % message))
-        if isinstance(answer, bool):
-            tokens.append((Token.Answer, ' ' + 'Yes' if answer else 'No'))
+        if isinstance(status['answer'], bool):
+            tokens.append((Token.Answer, ' Yes' if status['answer'] else ' No'))
         else:
-            instruction = ' '
             if default:
                 instruction = ' (Y/n)'
             else:
@@ -50,11 +47,13 @@ def question(message, **kwargs):
         return tokens
 
     # assemble layout
-    layout = Window(
-        height=D.exact(1),
-        content=TokenListControl(get_prompt_tokens, align_center=False),
-        scroll_offsets=ScrollOffsets(top=1, bottom=1)
-    )
+    # TODO this does not work without the HSplit??
+    layout = HSplit([
+        Window(
+            height=D.exact(1),
+            content=TokenListControl(get_prompt_tokens, align_center=False),
+        )
+    ])
 
     # key bindings
     manager = KeyBindingManager.for_prompt()
@@ -67,18 +66,18 @@ def question(message, **kwargs):
     @manager.registry.add_binding('n')
     @manager.registry.add_binding('N')
     def key_n(event):
-        answer = False
+        status['answer'] = False
         event.cli.set_return_value(False)
 
     @manager.registry.add_binding('y')
     @manager.registry.add_binding('Y')
     def key_y(event):
-        answer = True
+        status['answer'] = True
         event.cli.set_return_value(True)
 
     @manager.registry.add_binding(Keys.Enter, eager=True)
     def set_answer(event):
-        answer = default
+        status['answer'] = default
         event.cli.set_return_value(default)
 
     return Application(

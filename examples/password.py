@@ -4,7 +4,7 @@
 """
 from __future__ import print_function, unicode_literals
 
-from inquirer import prompt, print_json, default_style
+from whaaaaat import prompt, print_json, default_style
 
 
 questions = [

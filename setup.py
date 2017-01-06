@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
-from inquirer import __version__
+#from whaaaaat import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -19,7 +19,7 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs \
                     if 'git+' not in x]
 
 setup(
-    name='inquirerpy',
+    name='whaaaaat',
     version='0.2.0',
     description=(
           'Collection of common interactive command line user interfaces,'

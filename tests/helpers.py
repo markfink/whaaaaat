@@ -18,8 +18,8 @@ from prompt_toolkit.input import PipeInput
 from prompt_toolkit.interface import CommandLineInterface
 from prompt_toolkit.output import DummyOutput
 
-from inquirer import style_from_dict, Token
-from inquirer import prompts
+from whaaaaat import style_from_dict, Token
+from whaaaaat import prompts
 
 
 # http://code.activestate.com/recipes/52308-the-simple-but-handy-collector-of-a-bunch-of-named/?in=user-97991
@@ -191,24 +191,46 @@ class SimplePty(PtyProcess):
         inst.timeout = timeout  # in seconds
         return inst
 
-    def equals(self, text):
+    def expect(self, text):
         """Read until equals text or timeout."""
         # inspired by pexpect/pty_spawn and  pexpect/expect.py expect_loop
+        def check_report(buf, text):
+            def first_diff():
+                for i in range(0, min(len(buf), len(text))):
+                    if buf[i] != text[i]:
+                        return i
+            if buf == text:
+                return
+            verdict = 'output was:\n%s\nexpected:\n%s' % (buf, text)
+            d = first_diff()
+            if d:
+                verdict += '\ndiff position: %d %s' % (d, buf[d])
+            assert buf == text, verdict
+
         end_time = time.time() + self.timeout
         buf = ''
         while (end_time - time.time()) > 0.0:
             # switch to nonblocking read
             reads, _, _ = select.select([self.fd], [], [], end_time - time.time())
             if len(reads) > 0:
-                buf += self.read()
+                try:
+                    buf += self.read()
+                except EOFError:
+                    print 'len: %d' % len(buf)
+                    #assert buf == text, \
+                    #    'output was:\n%s\nexpected:\n%s' % (buf, text)
+                    check_report(buf, text)
                 if buf == text:
-                    return True
+                    return
+                elif len(buf) >= len(text):
+                    break
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        return False
+        #assert buf == text, 'output was:\n%s\nexpected:\n%s' % (buf, text)
+        check_report(buf, text)
 
-    def equals_regex(self, pattern):
+    def expect_regex(self, pattern):
         """Read until matches pattern or timeout."""
         # inspired by pexpect/pty_spawn and  pexpect/expect.py expect_loop
         end_time = time.time() + self.timeout
@@ -218,16 +240,16 @@ class SimplePty(PtyProcess):
             # switch to nonblocking read
             reads, _, _ = select.select([self.fd], [], [], end_time - time.time())
             if len(reads) > 0:
-                buf += self.read()
+                try:
+                    buf += self.read()
+                except EOFError:
+                    assert prog.match(buf), \
+                        'output was:\n%s\nexpect pattern:\n%s' % (buf, pattern)
                 if prog.match(buf):
                     return True
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        return False
+        assert prog.match(buf), \
+            'output was:\n%s\nexpect pattern:\n%s' % (buf, pattern)
 
-    def __eq__(self, other):
-        """Syntactic sugar to avoid calling read() all the time"""
-        if isinstance(other, basestring):
-            return self.equals(other)
-        return False

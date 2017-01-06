@@ -5,7 +5,7 @@
 """
 from __future__ import print_function, unicode_literals
 
-from inquirer import style_from_dict, Token, prompt, print_json, Separator
+from whaaaaat import style_from_dict, Token, prompt, print_json, Separator
 
 
 style = style_from_dict({
@@ -25,7 +25,7 @@ questions = [
         'message': 'Select toppings',
         'name': 'toppings',
         'choices': [
-            Separator(' = The Meats = '),
+            Separator(' = The Meats ='),
             {
                 'name': 'Ham'
             },
@@ -35,7 +35,7 @@ questions = [
             {
                 'name': 'Bacon'
             },
-            Separator(' = The Cheeses = '),
+            Separator(' = The Cheeses ='),
             {
                 'name': 'Mozzarella',
                 'checked': True
@@ -56,7 +56,7 @@ questions = [
             {
                 'name': 'Pepperoni'
             },
-            Separator(' = The extras = '),
+            Separator(' = The extras ='),
             {
                 'name': 'Pineapple'
             },

@@ -5,7 +5,7 @@ from prompt_toolkit.input import PipeInput
 from prompt_toolkit.interface import CommandLineInterface
 from prompt_toolkit.output import DummyOutput
 
-from inquirer.prompts import list  # this import is necessary!
+from whaaaaat.prompts import list  # this import is necessary!
 from .helpers import feed_app_with_input, keys
 
 
