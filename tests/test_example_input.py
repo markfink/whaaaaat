@@ -5,8 +5,7 @@ import textwrap
 
 import pytest
 
-from .helpers import keys
-from .helpers import SimplePty
+from .helpers import keys, SimplePty
 
 
 @pytest.fixture
