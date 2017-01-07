@@ -4,8 +4,18 @@ list prompt example
 """
 from __future__ import print_function, unicode_literals
 
-from whaaaaat import prompt, print_json, default_style, Separator
+from whaaaaat import style_from_dict, Token, prompt, print_json, default_style,\
+    Separator
 
+style = style_from_dict({
+    Token.Separator: '#6C6C6C',
+    Token.QuestionMark: '#FF9D00 bold',
+    Token.Selected: '#5F819D',
+    Token.Pointer: '#FF9D00 bold',  # AWS orange
+    Token.Instruction: '',  # default
+    Token.Answer: '#5F819D bold',
+    Token.Question: '',
+})
 
 questions = [
     {
@@ -33,5 +43,5 @@ questions = [
     }
 ]
 
-answers = prompt(questions, style=default_style)
+answers = prompt(questions, style=style)
 print_json(answers)

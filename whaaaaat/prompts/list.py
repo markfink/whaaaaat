@@ -18,6 +18,7 @@ from prompt_toolkit.token import Token
 from prompt_toolkit.styles import style_from_dict
 
 from .. import PromptParameterException
+from ..separator import Separator
 from .common import if_mousedown, default_style
 
 # custom control based on TokenListControl
@@ -32,8 +33,30 @@ class InquirerControl(TokenListControl):
         self.selected_option_index = 0
         self.answered = False
         self.choices = choices
+        self._init_choices(choices)
         super(InquirerControl, self).__init__(self._get_choice_tokens,
                                               **kwargs)
+
+    def _init_choices(self, choices, default=None):
+        # helper to convert from question format to internal format
+        self.choices = []  # list (key, name, value)
+        for i, c in enumerate(choices):
+            if isinstance(c, Separator):
+                self.choices.append((c, None))
+            else:
+                if isinstance(c, basestring):
+                    self.choices.append((c, None))
+                    #key += 1
+                else:
+                    #key = c.get('key')
+                    name = c.get('name')
+                    disabled = c.get('disabled', None)
+                    #if default and default == key:
+                    #    self.pointer_index = i
+                    #    key = key.upper()  # default key is in uppercase
+                    self.choices.append((name, disabled))
+        # append the help choice
+        #key = 'h'
 
     @property
     def choice_count(self):
@@ -43,7 +66,7 @@ class InquirerControl(TokenListControl):
         tokens = []
         T = Token
 
-        def append(index, label):
+        def append(index, choice):
             selected = (index == self.selected_option_index)
 
             @if_mousedown
@@ -55,13 +78,16 @@ class InquirerControl(TokenListControl):
 
             token = T.Selected if selected else T
 
-            tokens.append((T.Selected if selected else T, ' > ' if selected
+            tokens.append((T.Pointer if selected else T, ' \u276f ' if selected
             else '   '))
             if selected:
                 tokens.append((Token.SetCursorPosition, ''))
-
-            tokens.append((T.Selected if selected else T, '%-24s' % label,
-                           select_item))
+            if choice[1]:  # disabled
+                tokens.append((T.Selected if selected else T, 
+                               '- %s (%s)' % (choice[0], choice[1])))
+            else:
+                tokens.append((T.Selected if selected else T, str(choice[0]),
+                               select_item))
             tokens.append((T, '\n'))
 
         # prepare the select choices
@@ -71,7 +97,7 @@ class InquirerControl(TokenListControl):
         return tokens
 
     def get_selection(self):
-        return self.choices[self.selected_option_index]
+        return self.choices[self.selected_option_index][0]
 
 
 def question(message, **kwargs):
@@ -125,13 +151,23 @@ def question(message, **kwargs):
 
     @manager.registry.add_binding(Keys.Down, eager=True)
     def move_cursor_down(event):
-        ic.selected_option_index = (
-            (ic.selected_option_index + 1) % ic.choice_count)
+        def _next():
+            ic.selected_option_index = (
+                (ic.selected_option_index + 1) % ic.choice_count)
+        _next()
+        while isinstance(ic.choices[ic.selected_option_index][0], Separator) or\
+                ic.choices[ic.selected_option_index][1]:
+            _next()
 
     @manager.registry.add_binding(Keys.Up, eager=True)
     def move_cursor_up(event):
-        ic.selected_option_index = (
-            (ic.selected_option_index - 1) % ic.choice_count)
+        def _prev():
+            ic.selected_option_index = (
+                (ic.selected_option_index - 1) % ic.choice_count)
+        _prev()
+        while isinstance(ic.choices[ic.selected_option_index][0], Separator) or \
+                ic.choices[ic.selected_option_index][1]:
+            _prev()
 
     @manager.registry.add_binding(Keys.Enter, eager=True)
     def set_answer(event):

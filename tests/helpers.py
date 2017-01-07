@@ -4,10 +4,8 @@ Common test functionality
 """
 import os
 import sys
-import regex
 import codecs
 import time
-#import fcntl
 import select
 
 from ptyprocess import PtyProcess
@@ -194,19 +192,6 @@ class SimplePty(PtyProcess):
     def expect(self, text):
         """Read until equals text or timeout."""
         # inspired by pexpect/pty_spawn and  pexpect/expect.py expect_loop
-        def check_report(buf, text):
-            def first_diff():
-                for i in range(0, min(len(buf), len(text))):
-                    if buf[i] != text[i]:
-                        return i
-            if buf == text:
-                return
-            verdict = 'output was:\n%s\nexpected:\n%s' % (buf, text)
-            d = first_diff()
-            if d:
-                verdict += '\ndiff position: %d %s' % (d, buf[d])
-            assert buf == text, verdict
-
         end_time = time.time() + self.timeout
         buf = ''
         while (end_time - time.time()) > 0.0:
@@ -217,9 +202,7 @@ class SimplePty(PtyProcess):
                     buf += self.read()
                 except EOFError:
                     print 'len: %d' % len(buf)
-                    #assert buf == text, \
-                    #    'output was:\n%s\nexpected:\n%s' % (buf, text)
-                    check_report(buf, text)
+                    assert buf == text
                 if buf == text:
                     return
                 elif len(buf) >= len(text):
@@ -227,8 +210,7 @@ class SimplePty(PtyProcess):
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        #assert buf == text, 'output was:\n%s\nexpected:\n%s' % (buf, text)
-        check_report(buf, text)
+        assert buf == text
 
     def expect_regex(self, pattern):
         """Read until matches pattern or timeout."""
@@ -243,13 +225,13 @@ class SimplePty(PtyProcess):
                 try:
                     buf += self.read()
                 except EOFError:
-                    assert prog.match(buf), \
-                        'output was:\n%s\nexpect pattern:\n%s' % (buf, pattern)
+                    assert prog.match(buf) is not None, \
+                        'output was:\n%s\nexpect regex pattern:\n%s' % (buf, pattern)
                 if prog.match(buf):
                     return True
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        assert prog.match(buf), \
-            'output was:\n%s\nexpect pattern:\n%s' % (buf, pattern)
+        assert prog.match(buf) is not None, \
+            'output was:\n%s\nexpect regex pattern:\n%s' % (buf, pattern)
 
