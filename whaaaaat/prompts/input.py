@@ -4,10 +4,11 @@
 """
 from __future__ import print_function, unicode_literals
 from prompt_toolkit.token import Token
-from prompt_toolkit.styles import style_from_dict
 from prompt_toolkit.shortcuts import create_prompt_application
 from prompt_toolkit.validation import Validator, ValidationError
 from prompt_toolkit.layout.lexers import SimpleLexer
+
+from .common import default_style
 
 # use std prompt-toolkit control
 
@@ -31,19 +32,12 @@ def question(message, **kwargs):
             kwargs['validator'] = _InputValidator()
 
     # TODO style defaults on detail level
-    if not 'style' in kwargs:
-        kwargs['style'] = style_from_dict({
-            Token.QuestionMark: '#5F819D',
-            #Token.Selected: '#FF9D00',  # AWS orange
-            Token.Instruction: '',  # default
-            Token.Answer: '#FF9D00 bold',  # AWS orange
-            Token.Question: 'bold',
-        })
+    kwargs['style'] = kwargs.pop('style', default_style)
 
     def _get_prompt_tokens(cli):
         return [
             (Token.QuestionMark, '?'),
-            (Token.Question, ' %s ' % message)
+            (Token.Question, ' %s  ' % message)
         ]
 
     return create_prompt_application(

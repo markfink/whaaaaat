@@ -7,7 +7,7 @@ from __future__ import print_function, unicode_literals
 import regex
 
 from whaaaaat import style_from_dict, Token, prompt, print_json
-from whaaaaat import Validator, ValidationError, default_style
+from whaaaaat import Validator, ValidationError
 
 
 class PhoneNumberValidator(Validator):
@@ -20,12 +20,11 @@ class PhoneNumberValidator(Validator):
 
 
 style = style_from_dict({
-    Token.QuestionMark: '#FF9D00 bold',
-    Token.Selected: '#5F819D bold',
-    Token.Instruction: '',  # default
-    Token.Answer: '#5F819D bold',
-    Token.Question: '',
-})
+        Token.QuestionMark: '#FF9D00 bold',
+        Token.Instruction: '',  # default
+        Token.Answer: '#5F819D bold',  # AWS orange
+        Token.Question: '',
+    })
 
 
 questions = [
@@ -33,13 +32,13 @@ questions = [
         'type': 'input',
         'name': 'first_name',
         'message': 'What\'s your first name',
-        'default': 'John'
     },
     {
         'type': 'input',
         'name': 'last_name',
         'message': 'What\'s your last name',
-        'validate': lambda val: val == 'Doe' or 'is your name Doe?'
+        'default': 'Doe',
+        'validate': lambda val: val == 'Doe' or 'is your last name Doe?'
     },
     {
         'type': 'input',
@@ -49,5 +48,5 @@ questions = [
     }
 ]
 
-answers = prompt(questions, style=default_style)
+answers = prompt(questions, style=style)
 print_json(answers)

@@ -15,7 +15,6 @@ from prompt_toolkit.layout.containers import ConditionalContainer, \
 from prompt_toolkit.layout.dimension import LayoutDimension as D
 from prompt_toolkit.mouse_events import MouseEventTypes
 from prompt_toolkit.token import Token
-from prompt_toolkit.styles import style_from_dict
 
 from .. import PromptParameterException
 from ..separator import Separator

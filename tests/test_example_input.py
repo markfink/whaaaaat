@@ -11,7 +11,7 @@ from .helpers import SimplePty
 
 @pytest.fixture
 def example_app():
-    p = SimplePty.spawn(['python', 'examples/list.py'])
+    p = SimplePty.spawn(['python', 'examples/input.py'])
     yield p
     # it takes some time to collect the coverage data
     # if the main process exits too early the coverage data is not available
@@ -22,29 +22,22 @@ def example_app():
 
 def test_list(example_app):
     example_app.expect(textwrap.dedent("""\
-        ? What do you want to do?  (Use arrow keys)
-         ❯ Order a pizza
-           Make a reservation
-           ---------------
-           Ask for opening hours
-           - Contact support (Unavailable at this time)
-           Talk to the receptionist"""))
+        ? What's your first name  """))
+    example_app.writeline('John')
+    example_app.expect(textwrap.dedent("""\
+        ? What's your first name  John
+        ? What's your last name  Doe"""))
     example_app.write(keys.ENTER)
     example_app.expect(textwrap.dedent("""\
-        ? What do you want to do?  Order a pizza
-        ? What size do you need?  (Use arrow keys)
-         ❯ Jumbo
-           Large
-           Standard
-           Medium
-           Small
-           Micro"""))
-    example_app.write(keys.ENTER)
+        ? What's your last name  Doe
+        ? What's your phone number  """))
+    example_app.writeline('0123456789')
     example_app.expect(textwrap.dedent("""\
-        ? What size do you need?  Jumbo
+        ? What's your phone number  0123456789
         {
-            "size": "jumbo", 
-            "theme": "Order a pizza"
+            "first_name": "John", 
+            "last_name": "Doe", 
+            "phone": "0123456789"
         }
         
         """))
