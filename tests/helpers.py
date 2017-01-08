@@ -8,6 +8,7 @@ import codecs
 import time
 import select
 
+import pytest
 from ptyprocess import PtyProcess
 import regex
 
@@ -235,3 +236,20 @@ class SimplePty(PtyProcess):
         assert prog.match(buf) is not None, \
             'output was:\n%s\nexpect regex pattern:\n%s' % (buf, pattern)
 
+
+def create_example_fixture(example):
+    """Create a pytest fixture to run the example in pty subprocess & cleanup.
+
+    :param example: relative path like 'examples/input.py'
+    :return: pytest fixture
+    """
+    @pytest.fixture
+    def example_app():
+        p = SimplePty.spawn(['python', example])
+        yield p
+        # it takes some time to collect the coverage data
+        # if the main process exits too early the coverage data is not available
+        time.sleep(p.delayafterterminate)
+        p.sendintr()  # in case the subprocess was not ended by the test
+        p.wait()  # without wait() the coverage info never arrives
+    return example_app

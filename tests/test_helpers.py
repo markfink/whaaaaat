@@ -1,26 +1,18 @@
 # -*- coding: utf-8 -*-
 import textwrap
-import time
 import pytest
 
-from .helpers import remove_ansi_escape_sequences, SimplePty
+from .helpers import remove_ansi_escape_sequences
+from .helpers import create_example_fixture
+
+
+example_app = create_example_fixture('tests/example_app.py')
 
 
 def test_remove_ansi_escape_sequences():
     line = 'true\x1b[39;49;00m, \r\n    \x1b[34;01m"favorite"\x1b[39;49;00m: \x1b[33m"smoked bacon"\x1b[39;49;00m\r\n}\r\n\r\n'
     escaped_line = remove_ansi_escape_sequences(line)
     assert escaped_line == 'true,\n    "favorite": "smoked bacon"\n}\n\n'
-
-
-@pytest.fixture
-def example_app():
-    p = SimplePty.spawn(['python', 'tests/example_app.py'])
-    yield p
-    # it takes some time to collect the coverage data
-    # if the main process exits too early the coverage data is not available
-    time.sleep(p.delayafterterminate)
-    p.sendintr()  # in case the subprocess was not ended by the test
-    p.wait()  # without wait() the coverage info never arrives
 
 
 def test_example_app(example_app):

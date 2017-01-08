@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-* password prompt example
+* password question example
 """
 from __future__ import print_function, unicode_literals
 
-from whaaaaat import prompt, print_json, default_style
+from whaaaaat import style_from_dict, Token, prompt, print_json
+
+
+style = style_from_dict({
+    Token.QuestionMark: '#FF9D00 bold',
+    Token.Instruction: '',  # default
+    Token.Answer: '#5F819D bold',
+    Token.Question: '',
+})
 
 
 questions = [
@@ -15,5 +23,5 @@ questions = [
     }
 ]
 
-answers = prompt(questions, style=default_style)
+answers = prompt(questions, style=style)
 print_json(answers)

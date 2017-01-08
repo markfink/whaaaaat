@@ -13,7 +13,7 @@ style = style_from_dict({
     Token.QuestionMark: '#FF9D00 bold',
     #Token.Selected: '',  # default
     Token.Selected: '#5F819D',
-    Token.Pointer: '#FF9D00 bold',  # AWS orange
+    Token.Pointer: '#FF9D00 bold',
     Token.Instruction: '',  # default
     Token.Answer: '#5F819D bold',
     Token.Question: '',

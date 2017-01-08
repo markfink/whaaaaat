@@ -1,22 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
-import time
 import textwrap
 
-import pytest
+from .helpers import keys
+from .helpers import create_example_fixture
 
-from .helpers import keys, SimplePty
 
-
-@pytest.fixture
-def example_app():
-    p = SimplePty.spawn(['python', 'examples/input.py'])
-    yield p
-    # it takes some time to collect the coverage data
-    # if the main process exits too early the coverage data is not available
-    time.sleep(p.delayafterterminate)
-    p.sendintr()  # in case the subprocess was not ended by the test
-    p.wait()  # without wait() the coverage info never arrives
+example_app = create_example_fixture('examples/input.py')
 
 
 def test_list(example_app):
