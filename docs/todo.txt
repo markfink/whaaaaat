@@ -8,8 +8,6 @@
 * CI
 * checkbox validate
 * editor prompt
-* expand prompt
-* password prompt
 * samples for all prompts
 * bottom-bar
 * Python 3 support

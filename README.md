@@ -1,4 +1,4 @@
-# inquirerpy
+# whaaaaat?
 
 A collection of common interactive command line user interfaces.
 
@@ -20,18 +20,18 @@ A collection of common interactive command line user interfaces.
 
 ## Goal and Philosophy
 
-**`inquirerpy`** strives to be an easily embeddable and beautiful command line interface for [Python](https://python.org/). **`inquirerpy`** wants to make it easy for existing Inquirer.js users to write immersive command line applications in Python. We are convinced that its feature-set is the most complete for building immersive CLI applications. We also hope that **`inquirerpy`** proves itself useful to Python users.
+**`whaaaaat`** strives to be an easily embeddable and beautiful command line interface for [Python](https://python.org/). **`whaaaaat`** wants to make it easy for existing Inquirer.js users to write immersive command line applications in Python. We are convinced that its feature-set is the most complete for building immersive CLI applications. We also hope that **`whaaaaat`** proves itself useful to Python users.
 
-**`inquirerpy`** should ease the process of
+**`whaaaaat`** should ease the process of
 - providing *error feedback*
 - *asking questions*
 - *parsing* input
 - *validating* answers
 - managing *hierarchical prompts*
 
-**Note:** **`inquirerpy`** provides the user interface and the inquiry session flow.
+**Note:** **`whaaaaat`** provides the user interface and the inquiry session flow.
 > 
-If you're searching for a scaffolding utility, then check out [banana](https://github.com/finklabs/banana), the inquirerpy's sister utility.
+If you're searching for a scaffolding utility, then check out [banana](https://github.com/finklabs/banana), the whaaaaat's sister utility.
 
 
 ## Documentation
@@ -41,10 +41,10 @@ If you're searching for a scaffolding utility, then check out [banana](https://g
 ### Installation
 <a name="installation"></a>
 
-Like most Python packages inquirerpy is available on [PyPi](TODO). Simply use pip to install the inquirerpy package
+Like most Python packages whaaaaat is available on [PyPi](TODO). Simply use pip to install the whaaaaat package
 
 ``` shell
-pip install inquirerpy
+pip install whaaaaat
 ```
 
 
@@ -58,7 +58,7 @@ Like Inquirer.js, using inquirer is structured into two simple steps:
 
 ```python
 from __future__ import print_function, unicode_literals
-from inquirer import prompt, print_json
+from whaaaaat import prompt, print_json
 
 answers = prompt(questions)
 print_json(answers)  # use the answers as input for your app
@@ -76,18 +76,13 @@ Most of the examples intend to demonstrate a single question type or feature:
 * expand.py
 * list.py
 * password.py
-* recursive.py
 * when.py
 * checkbox.py
 * hierarchical.py
-* long-list.py
-* pizza.py - demonstrate a using different question types
-* rx-observable-array.py
+* pizza.py - demonstrate using different question types
 * editor.py
 * input.py
-* nested-call.py
 * rawlist.py
-* rx-observable-create.py
 
 
 ### Question Types
@@ -195,7 +190,7 @@ TODO
 ## Windows Platform
 <a name="windows"></a>
 
-**`inquirerpy`** is build on prompt_toolkit which is cross platform, and everything that you build on top should run fine on both Unix and Windows systems. On Windows, it uses a different event loop (WaitForMultipleObjects instead of select), and another input and output system. (Win32 APIs instead of pseudo-terminals and VT100.)
+**`whaaaaat`** is build on prompt_toolkit which is cross platform, and everything that you build on top should run fine on both Unix and Windows systems. On Windows, it uses a different event loop (WaitForMultipleObjects instead of select), and another input and output system. (Win32 APIs instead of pseudo-terminals and VT100.)
 
 It's worth noting that the implementation is a "best effort of what is possible". Both Unix and Windows terminals have their limitations. But in general, the Unix experience will still be a little better.
 
