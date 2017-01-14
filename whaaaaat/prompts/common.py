@@ -30,7 +30,7 @@ def setup_validator(kwargs):
         elif callable(validate_prompt):
             class _InputValidator(Validator):
                 def validate(self, document):
-                    print('validation!!')
+                    #print('validation!!')
                     verdict = validate_prompt(document.text)
                     if isinstance(verdict, basestring):
                         raise ValidationError(

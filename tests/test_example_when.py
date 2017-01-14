@@ -20,7 +20,7 @@ def test_when_bacon(example_app):
     example_app.expect(textwrap.dedent("""\
         ? Bacon lover, what is your favorite type of bacon?  smoked bacon
         {
-            "bacon": true, 
+            "bacon": true,
             "favorite": "smoked bacon"
         }
         
@@ -44,8 +44,8 @@ def test_when_pizza(example_app):
     example_app.expect(textwrap.dedent("""\
         ? Whew! What is your favorite type of pizza?  Toscana
         {
-            "bacon": false, 
-            "favorite": "Toscana", 
+            "bacon": false,
+            "favorite": "Toscana",
             "pizza": true
         }
         
@@ -64,7 +64,7 @@ def test_when_no_thanks(example_app):
     example_app.expect(textwrap.dedent("""\
         ? Ok... Do you like pizza?  No
         {
-            "bacon": false, 
+            "bacon": false,
             "pizza": false
         }
         

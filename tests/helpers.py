@@ -81,9 +81,11 @@ def feed_app_with_input(type, message, text, **kwargs):
 
 def remove_ansi_escape_sequences(text):
     # http://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
-    # also clean up the line endings
-    return regex.sub(r'(\x9b|\x1b\[)[0-?]*[ -\/]*[@-~]|\ *\r', '', text)
-
+    # remove all ansi escape sequences
+    #return regex.sub(r'(\x9b|\x1b\[)[0-?]*[ -\/]*[@-~]|[ ]*\r', '', text)
+    text = regex.sub(r'(\x9b|\x1b\[)[0-?]*[ -\/]*[@-~]', '', text)
+    text = regex.sub(r'[ \r]*\n', '\n', text)  # also clean up the line endings
+    return text
 
 # helper for running sut as subprocess within pty
 # does two things
@@ -127,8 +129,8 @@ class SimplePty(PtyProcess):
             return ''
         if self.skip_cr:
             b = b.replace('\r', '')
-        if self.skip_ansi:
-            b = remove_ansi_escape_sequences(b)
+        #if self.skip_ansi:
+        #    b = remove_ansi_escape_sequences(b)
         return self.decoder.decode(b, final=False)
 
     def readline(self):
@@ -200,7 +202,7 @@ class SimplePty(PtyProcess):
             reads, _, _ = select.select([self.fd], [], [], end_time - time.time())
             if len(reads) > 0:
                 try:
-                    buf += self.read()
+                    buf = remove_ansi_escape_sequences(buf + self.read())
                 except EOFError:
                     print 'len: %d' % len(buf)
                     assert buf == text
@@ -211,6 +213,7 @@ class SimplePty(PtyProcess):
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
+        print repr(buf)
         assert buf == text
 
     def expect_regex(self, pattern):
@@ -224,7 +227,7 @@ class SimplePty(PtyProcess):
             reads, _, _ = select.select([self.fd], [], [], end_time - time.time())
             if len(reads) > 0:
                 try:
-                    buf += self.read()
+                    buf = remove_ansi_escape_sequences(buf + self.read())
                 except EOFError:
                     assert prog.match(buf) is not None, \
                         'output was:\n%s\nexpect regex pattern:\n%s' % (buf, pattern)

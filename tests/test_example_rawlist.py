@@ -11,7 +11,7 @@ example_app = create_example_fixture('examples/rawlist.py')
 
 def test_rawlist(example_app):
     example_app.expect(textwrap.dedent("""\
-        ? What do you want to do? 
+        ? What do you want to do?
           1) Order a pizza
           2) Make a reservation
            ---------------
@@ -21,7 +21,7 @@ def test_rawlist(example_app):
     example_app.write(keys.ENTER)
     example_app.expect(textwrap.dedent("""\
         ? What do you want to do?  Order a pizza
-        ? What size do you need 
+        ? What size do you need
           1) Jumbo
           2) Large
           3) Standard
@@ -36,7 +36,7 @@ def test_rawlist(example_app):
     example_app.expect(textwrap.dedent("""\
         ? What size do you need  Large
         {
-            "size": "large", 
+            "size": "large",
             "theme": "Order a pizza"
         }
         

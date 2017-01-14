@@ -32,7 +32,7 @@ def test_list(example_app):
     example_app.expect(textwrap.dedent("""\
         ? What size do you need?  Jumbo
         {
-            "size": "jumbo", 
+            "size": "jumbo",
             "theme": "Order a pizza"
         }
         

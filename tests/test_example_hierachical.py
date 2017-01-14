@@ -8,7 +8,7 @@ from .helpers import keys, create_example_fixture
 example_app = create_example_fixture('examples/hierarchical.py')
 
 
-def test_list(example_app):
+def test_hierarchical(example_app):
     example_app.expect(textwrap.dedent("""\
         You find yourself in a small room, there is a door in front of you.
         ? Which direction would you like to go?  (Use arrow keys)
@@ -50,10 +50,10 @@ def test_list(example_app):
     example_app.write(keys.ENTER)
     example_app.expect(textwrap.dedent("""\
         ? Which direction would you like to go?  Forward
-        You find a painted wooden sign that says: 
-         ____  _____  ____  _____ 
-        (_  _)(  _  )(  _ \(  _  ) 
-          )(   )(_)(  )(_) ))(_)(  
-         (__) (_____)(____/(_____) 
+        You find a painted wooden sign that says:
+         ____  _____  ____  _____
+        (_  _)(  _  )(  _ \(  _  )
+          )(   )(_)(  )(_) ))(_)(
+         (__) (_____)(____/(_____)
         
         """))

@@ -111,5 +111,5 @@ questions = [
 ]
 
 answers = prompt(questions, style=style)
-print('\nOrder receipt:')
+print('Order receipt:')
 print_json(answers)

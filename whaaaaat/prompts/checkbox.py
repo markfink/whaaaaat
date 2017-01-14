@@ -40,12 +40,12 @@ class InquirerControl(TokenListControl):
             if isinstance(c, Separator):
                 self.choices.append(c)
             else:
-                if 'value' in c:
-                    self.choices.append((c['name'], c['value']))
-                else:
-                    self.choices.append((c['name'], c['name']))
-                if 'checked' in c and c['checked']:
+                name = c['name']
+                value = c.get('value', name)
+                disabled = c.get('disabled', None)
+                if 'checked' in c and c['checked'] and not disabled:
                     self.selected_options.append(c['name'])
+                self.choices.append((name, value, disabled))
                 if searching_first_choice:
                     self.pointer_index = i  # find the first choice
                     searching_first_choice = False
@@ -60,7 +60,7 @@ class InquirerControl(TokenListControl):
 
         def append(index, line):
             if isinstance(line, Separator):
-                tokens.append((T.Separator, '%s\n' % line))
+                tokens.append((T.Separator, '  %s\n' % line))
             else:
                 line = line[0]
                 selected = (line in self.selected_options)
@@ -78,15 +78,19 @@ class InquirerControl(TokenListControl):
                     tokens.append((T.Pointer, ' \u276f', select_item))  # ' >'
                 else:
                     tokens.append((T, '  ', select_item))
-                if selected:
-                    tokens.append((T, '\u25cf ', select_item))  # 'o ' - FISHEYE
+                # 'o ' - FISHEYE
+                if choice[2]:  # disabled
+                    tokens.append((T, '- %s (%s)' % (choice[0], choice[2])))
                 else:
-                    tokens.append((T, '\u25cb ', select_item))  # 'o ' - FISHEYE
-
-                if pointed_at:
-                    tokens.append((Token.SetCursorPosition, ''))
-
-                tokens.append((T.Selected if selected else T, line, select_item))
+                    if selected:
+                        tokens.append((T.Selected, '\u25cf ', select_item))
+                    else:
+                        tokens.append((T, '\u25cb ', select_item))
+    
+                    if pointed_at:
+                        tokens.append((Token.SetCursorPosition, ''))
+    
+                    tokens.append((T, line, select_item))
                 tokens.append((T, '\n'))
 
         # prepare the select choices
@@ -108,7 +112,6 @@ class InquirerControl(TokenListControl):
 def question(message, **kwargs):
     # TODO add bottom-bar (Move up and down to reveal more choices)
     # TODO extract common parts for list, checkbox, rawlist, expand
-    # TODO disabled
     # TODO validate
     if not 'choices' in kwargs:
         raise PromptParameterException('choices')
@@ -202,7 +205,8 @@ def question(message, **kwargs):
         def _next():
             ic.pointer_index = ((ic.pointer_index + 1) % ic.line_count)
         _next()
-        while isinstance(ic.choices[ic.pointer_index], Separator):
+        while isinstance(ic.choices[ic.pointer_index], Separator)or \
+                ic.choices[ic.pointer_index][2]:
             _next()
 
     @manager.registry.add_binding(Keys.Up, eager=True)
@@ -210,7 +214,8 @@ def question(message, **kwargs):
         def _prev():
             ic.pointer_index = ((ic.pointer_index - 1) % ic.line_count)
         _prev()
-        while isinstance(ic.choices[ic.pointer_index], Separator):
+        while isinstance(ic.choices[ic.pointer_index], Separator)or \
+                ic.choices[ic.pointer_index][2]:
             _prev()
 
     @manager.registry.add_binding(Keys.Enter, eager=True)

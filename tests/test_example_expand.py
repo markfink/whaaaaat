@@ -35,7 +35,7 @@ def test_with_expand(example_app):
     example_app.write('h')
     example_app.expect(
         "\n" +
-        "  y) Ovewrite                    \n" +
+        "  y) Ovewrite\n" +
         "  A) Overwrite this one and all next\n" +
         "  d) Show diff\n" +
         "   ---------------\n" +

@@ -60,6 +60,14 @@ Like Inquirer.js, using inquirer is structured into two simple steps:
 from __future__ import print_function, unicode_literals
 from whaaaaat import prompt, print_json
 
+questions = [
+    {
+        'type': 'input',
+        'name': 'first_name',
+        'message': 'What\'s your first name',
+    }
+]
+
 answers = prompt(questions)
 print_json(answers)  # use the answers as input for your app
 ```
@@ -222,10 +230,10 @@ We're looking to offer good support for multiple prompts and environments. If yo
 ## Acknowledgments
 <a name="acknowledgements"></a>
 
-Many thanks to our friends at Inquirer.js. We think they did a great job developing the tooling for nodejs.
+Many thanks to our friends at Inquirer.js. We think they did a great job developing the tooling to support the nodejs technology.
 
 
 ## License
 <a name="license"></a>
 
-Copyright (c) 2016 Mark Fink (twitter: @markfink) Licensed under the MIT license.
+Copyright (c) 2016-2017 Mark Fink (twitter: @markfink) Licensed under the MIT license.

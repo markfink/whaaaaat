@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-* Checkbox prompt example
+* Checkbox question example
 * run example by typing `python example/checkbox.py` in your console
 """
 from __future__ import print_function, unicode_literals
@@ -11,7 +11,7 @@ from whaaaaat import style_from_dict, Token, prompt, print_json, Separator
 style = style_from_dict({
     Token.Separator: '#6C6C6C',
     Token.QuestionMark: '#FF9D00 bold',
-    Token.Selected: '',  # default
+    Token.Selected: '#5F819D',  # default
     Token.Pointer: '#FF9D00 bold',
     Token.Instruction: '',  # default
     Token.Answer: '#5F819D bold',
@@ -25,7 +25,7 @@ questions = [
         'message': 'Select toppings',
         'name': 'toppings',
         'choices': [
-            Separator(' = The Meats ='),
+            Separator('= The Meats ='),
             {
                 'name': 'Ham'
             },
@@ -35,7 +35,7 @@ questions = [
             {
                 'name': 'Bacon'
             },
-            Separator(' = The Cheeses ='),
+            Separator('= The Cheeses ='),
             {
                 'name': 'Mozzarella',
                 'checked': True
@@ -46,7 +46,7 @@ questions = [
             {
                 'name': 'Parmesan'
             },
-            Separator(' = The usual ='),
+            Separator('= The usual ='),
             {
                 'name': 'Mushroom'
             },
@@ -56,7 +56,7 @@ questions = [
             {
                 'name': 'Pepperoni'
             },
-            Separator(' = The extras ='),
+            Separator('= The extras ='),
             {
                 'name': 'Pineapple'
             },

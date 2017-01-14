@@ -28,5 +28,5 @@ node_modules
 report.xml
 pylint-report.html
 pytest-report.html
-set_inq
+set_w
 snafu.py
