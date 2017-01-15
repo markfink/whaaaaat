@@ -10,7 +10,7 @@ from prompt_toolkit.validation import Validator, ValidationError
 from utils import print_json, format_json
 
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 
 def here(p):

@@ -13,7 +13,6 @@ from prompt_toolkit.layout.controls import TokenListControl
 from prompt_toolkit.layout.containers import ConditionalContainer, \
     ScrollOffsets, HSplit
 from prompt_toolkit.layout.dimension import LayoutDimension as D
-from prompt_toolkit.mouse_events import MouseEventTypes
 from prompt_toolkit.token import Token
 
 from .. import PromptParameterException
@@ -41,21 +40,15 @@ class InquirerControl(TokenListControl):
         self.choices = []  # list (key, name, value)
         for i, c in enumerate(choices):
             if isinstance(c, Separator):
-                self.choices.append((c, None))
+                self.choices.append((c, None, None))
             else:
                 if isinstance(c, basestring):
-                    self.choices.append((c, None))
-                    #key += 1
+                    self.choices.append((c, c, None))
                 else:
-                    #key = c.get('key')
                     name = c.get('name')
+                    value = c.get('value', name)
                     disabled = c.get('disabled', None)
-                    #if default and default == key:
-                    #    self.pointer_index = i
-                    #    key = key.upper()  # default key is in uppercase
-                    self.choices.append((name, disabled))
-        # append the help choice
-        #key = 'h'
+                    self.choices.append((name, value, disabled))
 
     @property
     def choice_count(self):
@@ -75,15 +68,13 @@ class InquirerControl(TokenListControl):
                 self.answered = True
                 cli.set_return_value(None)
 
-            token = T.Selected if selected else T
-
             tokens.append((T.Pointer if selected else T, ' \u276f ' if selected
             else '   '))
             if selected:
                 tokens.append((Token.SetCursorPosition, ''))
-            if choice[1]:  # disabled
+            if choice[2]:  # disabled
                 tokens.append((T.Selected if selected else T, 
-                               '- %s (%s)' % (choice[0], choice[1])))
+                               '- %s (%s)' % (choice[0], choice[2])))
             else:
                 tokens.append((T.Selected if selected else T, str(choice[0]),
                                select_item))
@@ -96,7 +87,7 @@ class InquirerControl(TokenListControl):
         return tokens
 
     def get_selection(self):
-        return self.choices[self.selected_option_index][0]
+        return self.choices[self.selected_option_index][1]
 
 
 def question(message, **kwargs):
@@ -155,7 +146,7 @@ def question(message, **kwargs):
                 (ic.selected_option_index + 1) % ic.choice_count)
         _next()
         while isinstance(ic.choices[ic.selected_option_index][0], Separator) or\
-                ic.choices[ic.selected_option_index][1]:
+                ic.choices[ic.selected_option_index][2]:
             _next()
 
     @manager.registry.add_binding(Keys.Up, eager=True)
@@ -165,7 +156,7 @@ def question(message, **kwargs):
                 (ic.selected_option_index - 1) % ic.choice_count)
         _prev()
         while isinstance(ic.choices[ic.selected_option_index][0], Separator) or \
-                ic.choices[ic.selected_option_index][1]:
+                ic.choices[ic.selected_option_index][2]:
             _prev()
 
     @manager.registry.add_binding(Keys.Enter, eager=True)
