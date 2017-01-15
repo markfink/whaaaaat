@@ -213,7 +213,7 @@ class SimplePty(PtyProcess):
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        print repr(buf)
+        #print repr(buf)  # debug ansi code handling
         assert buf == text
 
     def expect_regex(self, pattern):
