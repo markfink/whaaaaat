@@ -16,3 +16,4 @@ ptyprocess==0.5.1
 #pip-tools>=1.7.0
 pep8>=1.7.0
 bumpversion>=0.5.3
+pypandoc>=1.3.3
