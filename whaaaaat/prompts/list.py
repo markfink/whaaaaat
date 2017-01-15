@@ -37,7 +37,8 @@ class InquirerControl(TokenListControl):
 
     def _init_choices(self, choices, default=None):
         # helper to convert from question format to internal format
-        self.choices = []  # list (key, name, value)
+        self.choices = []  # list (name, value, disabled)
+        searching_first_choice = True
         for i, c in enumerate(choices):
             if isinstance(c, Separator):
                 self.choices.append((c, None, None))
@@ -49,6 +50,9 @@ class InquirerControl(TokenListControl):
                     value = c.get('value', name)
                     disabled = c.get('disabled', None)
                     self.choices.append((name, value, disabled))
+                if searching_first_choice:
+                    self.selected_option_index = i  # found the first choice
+                    searching_first_choice = False
 
     @property
     def choice_count(self):
@@ -87,7 +91,7 @@ class InquirerControl(TokenListControl):
         return tokens
 
     def get_selection(self):
-        return self.choices[self.selected_option_index][1]
+        return self.choices[self.selected_option_index]
 
 
 def question(message, **kwargs):
@@ -110,15 +114,14 @@ def question(message, **kwargs):
         tokens.append((Token.QuestionMark, '?'))
         tokens.append((Token.Question, ' %s ' % message))
         if ic.answered:
-            tokens.append((Token.Answer, ' ' + ic.get_selection()))
+            tokens.append((Token.Answer, ' ' + ic.get_selection()[0]))
         else:
             tokens.append((Token.Instruction, ' (Use arrow keys)'))
         return tokens
 
     # assemble layout
     layout = HSplit([
-        Window(height=D.exact(1),
-               content=TokenListControl(get_prompt_tokens, align_center=False)),
+        Window(content=TokenListControl(get_prompt_tokens, align_center=False)),
         ConditionalContainer(
             Window(
                 ic,
@@ -162,7 +165,7 @@ def question(message, **kwargs):
     @manager.registry.add_binding(Keys.Enter, eager=True)
     def set_answer(event):
         ic.answered = True
-        event.cli.set_return_value(ic.get_selection())
+        event.cli.set_return_value(ic.get_selection()[1])
 
     return Application(
         layout=layout,
