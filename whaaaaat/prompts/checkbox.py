@@ -16,8 +16,7 @@ from prompt_toolkit.token import Token
 
 from .. import PromptParameterException
 from ..separator import Separator
-from . common import setup_simple_validator, default_style
-from .common import if_mousedown
+from .common import setup_simple_validator, default_style, if_mousedown
 
 
 # custom control based on TokenListControl

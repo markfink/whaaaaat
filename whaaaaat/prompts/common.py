@@ -52,8 +52,11 @@ def setup_simple_validator(kwargs):
     # not sure yet how to deal with the validation result:
     # https://github.com/jonathanslenders/python-prompt-toolkit/issues/430
     validate = kwargs.pop('validate', None)
-
-    if not callable(validate):
+    if validate is None:
+        def _always(answer):
+            return True
+        return _always
+    elif not callable(validate):
         raise ValueError('Here a simple validate function is expected, no class')
 
     def _validator(answer):
