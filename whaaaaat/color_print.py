@@ -3,7 +3,7 @@
 provide colorized output
 """
 from __future__ import print_function, unicode_literals
-
+import sys
 from prompt_toolkit.shortcuts import print_tokens, style_from_dict, Token
 
 
@@ -17,7 +17,14 @@ def _print_token_factory(col):
             (Token.Color, msg)
         ]
         print_tokens(tokens, style=style)
-    return _helper
+
+    def _helper_no_terminal(msg):
+        # workaround if we have no terminal
+        print(msg)
+    if sys.stdout.isatty():
+        return _helper
+    else:
+        return _helper_no_terminal
 
 # used this for color source:
 # http://unix.stackexchange.com/questions/105568/how-can-i-list-the-available-color-names
