@@ -1,0 +1,39 @@
+{
+  "virtualenv": {"name": "venv", "sitePackages": true},
+  "shell": "/bin/bash",
+  "commands": [
+    {
+      "cmd": [
+        "./venv/bin/pip install -r requirements.txt -r requirements_dev.txt"
+      ]
+    },
+
+    {
+      "cmd": "./venv/bin/python -m pytest --cov-report html --cov whaaaaat --html=pytest-report.html --self-contained-html --boxed tests/test_*.py",
+      "checks": [
+        {"name": "pytest", "index": "pytest-report.html"},
+        {"name": "testcoverage", "index": "htmlcov/index.html",
+          "includes": "htmlcov/**"}
+      ]
+    },
+
+    {
+      "cmd": "./venv/bin/pylint --output-format=html --files-output=n whaaaaat tests > pylint-report.html || true",
+      "checks": [
+        {"name": "pylint", "index": "pylint-report.html"}
+      ]
+    }
+  ],
+
+  "s3PublicSecretNames": false,
+
+  "plugins": ["slack"],
+
+  "slack": [
+    {
+      "branches": ["develop"],
+      "states": ["success"],
+      "pullRequests": true
+    }
+  ]
+}
