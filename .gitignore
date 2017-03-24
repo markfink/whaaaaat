@@ -30,3 +30,4 @@ pylint-report.html
 pytest-report.html
 set_w
 snafu.py
+set_infra
