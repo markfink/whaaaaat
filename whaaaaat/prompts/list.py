@@ -109,7 +109,6 @@ def question(message, **kwargs):
 
     def get_prompt_tokens(cli):
         tokens = []
-        T = Token
 
         tokens.append((Token.QuestionMark, '?'))
         tokens.append((Token.Question, ' %s ' % message))
