@@ -105,10 +105,6 @@ class SimplePty(PtyProcess):
     This class exposes a similar interface to :class:`PtyProcess`, but its read
     methods return unicode, and its :meth:`write` accepts unicode.
     """
-    if PY3:
-        string_type = str
-    else:
-        string_type = unicode   # analysis:ignore
 
     def __init__(self, pid, fd, encoding='utf-8', codec_errors='strict'):
         super(SimplePty, self).__init__(pid, fd)
