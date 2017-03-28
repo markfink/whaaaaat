@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-import prompts
-from prompts import list, confirm, input, password, checkbox, rawlist, expand
+from __future__ import absolute_import, print_function
+
 from prompt_toolkit.shortcuts import run_application
 
-from . import PromptParameterException
+from . import PromptParameterException, prompts
+from .prompts import list, confirm, input, password, checkbox, rawlist, expand
 
 
 def prompt(questions, answers=None, **kwargs):
