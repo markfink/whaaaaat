@@ -2,6 +2,9 @@
 """
 Common test functionality
 """
+
+from __future__ import print_function
+
 import os
 import sys
 import codecs
@@ -200,7 +203,7 @@ class SimplePty(PtyProcess):
                 try:
                     buf = remove_ansi_escape_sequences(buf + self.read())
                 except EOFError:
-                    print 'len: %d' % len(buf)
+                    print('len: %d' % len(buf))
                     assert buf == text
                 if buf == text:
                     return
@@ -209,7 +212,7 @@ class SimplePty(PtyProcess):
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        #print repr(buf)  # debug ansi code handling
+        #print(repr(buf))  # debug ansi code handling
         assert buf == text
 
     def expect_regex(self, pattern):
