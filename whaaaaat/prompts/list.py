@@ -77,7 +77,7 @@ class InquirerControl(TokenListControl):
             if selected:
                 tokens.append((Token.SetCursorPosition, ''))
             if choice[2]:  # disabled
-                tokens.append((T.Selected if selected else T, 
+                tokens.append((T.Selected if selected else T,
                                '- %s (%s)' % (choice[0], choice[2])))
             else:
                 tokens.append((T.Selected if selected else T, str(choice[0]),
