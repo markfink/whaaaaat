@@ -3,6 +3,8 @@
 `rawlist` type question
 """
 from __future__ import print_function, unicode_literals
+import sys
+
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
@@ -17,6 +19,12 @@ from .. import PromptParameterException
 from ..separator import Separator
 from .common import default_style
 from .common import if_mousedown
+
+
+PY3 = sys.version_info[0] >= 3
+
+if PY3:
+    basestring = str
 
 
 # custom control based on TokenListControl
