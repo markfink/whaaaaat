@@ -101,6 +101,9 @@ def remove_ansi_escape_sequences(text):
 
 PY3 = sys.version_info[0] >= 3
 
+if PY3:
+    basestring = str
+
 
 class SimplePty(PtyProcess):
     """Simple wrapper around a process running in a pseudoterminal.
@@ -127,7 +130,7 @@ class SimplePty(PtyProcess):
         if not b:
             return ''
         if self.skip_cr:
-            b = b.replace('\r', '')
+            b = b.replace(b'\r', b'')
         #if self.skip_ansi:
         #    b = remove_ansi_escape_sequences(b)
         return self.decoder.decode(b, final=False)
@@ -141,9 +144,10 @@ class SimplePty(PtyProcess):
         """
         # TODO implement a timeout
         b = super(SimplePty, self).readline().strip()
+        s = self.decoder.decode(b, final=False)
         if self.skip_ansi:
-            b = remove_ansi_escape_sequences(b)
-        return self.decoder.decode(b, final=False)
+            s = remove_ansi_escape_sequences(s)
+        return s
 
     def write(self, s):
         """Write the unicode string ``s`` to the pseudoterminal.
@@ -151,7 +155,8 @@ class SimplePty(PtyProcess):
 
         Returns the number of bytes written.
         """
-        b = s.encode(self.encoding)
+        if isinstance(s, basestring):
+            b = s.encode(self.encoding)
         count = super(SimplePty, self).write(b)
         return count
 
@@ -162,8 +167,7 @@ class SimplePty(PtyProcess):
         """
         if not s.endswith('\n'):
             s += '\n'
-        b = s.encode(self.encoding)
-        return self.write(b)
+        return self.write(s)
 
     @classmethod
     def spawn(
