@@ -103,7 +103,7 @@ Most of the examples intend to demonstrate a single question type or feature:
 Take `type`, `name`, `message`, `choices`[, `default`, `filter`] properties. (Note that
 default must be the choice `index` in the array or a choice `value`)
 
-![List prompt](/docs/images/list-prompt.png?raw=true)
+![List prompt](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/input-prompt.png)
 
 ---
 
@@ -112,7 +112,7 @@ default must be the choice `index` in the array or a choice `value`)
 Take `type`, `name`, `message`, `choices`[, `default`, `filter`] properties. (Note that
 default must the choice `index` in the array)
 
-![Raw list prompt](/docs/images/raw-list.png?raw=true)
+![Raw list prompt](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/raw-list.png)
 
 ---
 
@@ -125,8 +125,8 @@ Note that the `choices` object will take an extra parameter called `key` for the
 
 See `examples/expand.py` for a running example.
 
-![Expand prompt closed](/docs/images/expand-prompt-1.png?raw=true)
-![Expand prompt expanded](/docs/images/expand-prompt-2.png?raw=true)
+![Expand prompt closed](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/expand-prompt-1.png)
+![Expand prompt expanded](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/expand-prompt-2.png)
 
 ---
 
@@ -138,7 +138,7 @@ Choices marked as `{checked: true}` will be checked by default.
 
 Choices whose property `disabled` is truthy will be unselectable. If `disabled` is a string, then the string will be outputted next to the disabled choice, otherwise it'll default to `"Disabled"`. The `disabled` property can also be a synchronous function receiving the current answers as argument and returning a boolean or a string.
 
-![Checkbox prompt](/docs/images/checkbox-prompt.png?raw=true)
+![Checkbox prompt](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/checkbox-prompt.png)
 
 ---
 
@@ -146,7 +146,7 @@ Choices whose property `disabled` is truthy will be unselectable. If `disabled` 
 
 Take `type`, `name`, `message`[, `default`] properties. `default` is expected to be a boolean if used.
 
-![Confirm prompt](/docs/images/confirm-prompt.png?raw=true)
+![Confirm prompt](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/confirm-prompt.png)
 
 ---
 
@@ -154,7 +154,7 @@ Take `type`, `name`, `message`[, `default`] properties. `default` is expected to
 
 Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties.
 
-![Input prompt](/docs/images/input-prompt.png?raw=true)
+![Input prompt](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/input-prompt.png)
 
 ---
 
@@ -162,7 +162,7 @@ Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties.
 
 Take `type`, `name`, `message`[, `default`, `filter`, `validate`] properties.
 
-![Password prompt](/docs/images/password-prompt.png?raw=true)
+![Password prompt](https://raw.githubusercontent.com/finklabs/whaaaaat/develop/docs/images/password-prompt.png)
 
 ---
 
