@@ -4,6 +4,9 @@
 """
 from __future__ import print_function
 from __future__ import unicode_literals
+
+import sys
+
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
@@ -24,6 +27,12 @@ from .common import if_mousedown, default_style
 # https://github.com/jonathanslenders/python-prompt-toolkit/issues/281
 # https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/examples/full-screen-layout.py
 # https://github.com/jonathanslenders/python-prompt-toolkit/blob/master/docs/pages/full_screen_apps.rst
+
+
+PY3 = sys.version_info[0] >= 3
+
+if PY3:
+    basestring = str
 
 
 class InquirerControl(TokenListControl):
@@ -77,7 +86,7 @@ class InquirerControl(TokenListControl):
             if selected:
                 tokens.append((Token.SetCursorPosition, ''))
             if choice[2]:  # disabled
-                tokens.append((T.Selected if selected else T, 
+                tokens.append((T.Selected if selected else T,
                                '- %s (%s)' % (choice[0], choice[2])))
             else:
                 tokens.append((T.Selected if selected else T, str(choice[0]),
@@ -109,7 +118,6 @@ def question(message, **kwargs):
 
     def get_prompt_tokens(cli):
         tokens = []
-        T = Token
 
         tokens.append((Token.QuestionMark, '?'))
         tokens.append((Token.Question, ' %s ' % message))

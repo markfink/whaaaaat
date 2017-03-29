@@ -3,21 +3,29 @@
 `expand` type question
 """
 from __future__ import print_function, unicode_literals
+
+import sys
+
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import Window
-from prompt_toolkit.filters import IsDone, Condition
+from prompt_toolkit.filters import IsDone
 from prompt_toolkit.layout.controls import TokenListControl
-from prompt_toolkit.layout.containers import ConditionalContainer, \
-    ScrollOffsets, HSplit
+from prompt_toolkit.layout.containers import ConditionalContainer, HSplit
 from prompt_toolkit.layout.dimension import LayoutDimension as D
 from prompt_toolkit.token import Token
 
 from .. import PromptParameterException
 from ..separator import Separator
-from .common import setup_simple_validator, default_style
+from .common import default_style
 from .common import if_mousedown
+
+
+PY3 = sys.version_info[0] >= 3
+
+if PY3:
+    basestring = str
 
 
 # custom control based on TokenListControl

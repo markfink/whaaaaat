@@ -3,7 +3,14 @@
 example app to test running an app as subprocess within pty
 """
 from __future__ import print_function, unicode_literals
-import time
+import sys, time
+
+
+PY3 = sys.version_info[0] >= 3
+
+if PY3:
+    raw_input = input
+
 
 # http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 class bcolors:

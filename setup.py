@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from codecs import open
+from io import open
 from os import path
 
 here = path.abspath(path.dirname(__file__))
@@ -35,6 +35,7 @@ setup(
         'Development Status :: 1 - Planning',
         'Natural Language :: English',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',

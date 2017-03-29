@@ -6,7 +6,7 @@ from __future__ import print_function, unicode_literals
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout.containers import Window, ScrollOffsets, HSplit
+from prompt_toolkit.layout.containers import Window, HSplit
 from prompt_toolkit.layout.controls import TokenListControl
 from prompt_toolkit.layout.dimension import LayoutDimension as D
 from prompt_toolkit.token import Token
@@ -32,7 +32,6 @@ def question(message, **kwargs):
 
     def get_prompt_tokens(cli):
         tokens = []
-        T = Token
 
         tokens.append((Token.QuestionMark, '?'))
         tokens.append((Token.Question, ' %s ' % message))

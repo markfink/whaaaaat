@@ -2,6 +2,9 @@
 """
 Common test functionality
 """
+
+from __future__ import print_function
+
 import os
 import sys
 import codecs
@@ -98,6 +101,9 @@ def remove_ansi_escape_sequences(text):
 
 PY3 = sys.version_info[0] >= 3
 
+if PY3:
+    basestring = str
+
 
 class SimplePty(PtyProcess):
     """Simple wrapper around a process running in a pseudoterminal.
@@ -105,10 +111,6 @@ class SimplePty(PtyProcess):
     This class exposes a similar interface to :class:`PtyProcess`, but its read
     methods return unicode, and its :meth:`write` accepts unicode.
     """
-    if PY3:
-        string_type = str
-    else:
-        string_type = unicode   # analysis:ignore
 
     def __init__(self, pid, fd, encoding='utf-8', codec_errors='strict'):
         super(SimplePty, self).__init__(pid, fd)
@@ -128,7 +130,7 @@ class SimplePty(PtyProcess):
         if not b:
             return ''
         if self.skip_cr:
-            b = b.replace('\r', '')
+            b = b.replace(b'\r', b'')
         #if self.skip_ansi:
         #    b = remove_ansi_escape_sequences(b)
         return self.decoder.decode(b, final=False)
@@ -142,9 +144,10 @@ class SimplePty(PtyProcess):
         """
         # TODO implement a timeout
         b = super(SimplePty, self).readline().strip()
+        s = self.decoder.decode(b, final=False)
         if self.skip_ansi:
-            b = remove_ansi_escape_sequences(b)
-        return self.decoder.decode(b, final=False)
+            s = remove_ansi_escape_sequences(s)
+        return s
 
     def write(self, s):
         """Write the unicode string ``s`` to the pseudoterminal.
@@ -152,7 +155,8 @@ class SimplePty(PtyProcess):
 
         Returns the number of bytes written.
         """
-        b = s.encode(self.encoding)
+        if isinstance(s, basestring):
+            b = s.encode(self.encoding)
         count = super(SimplePty, self).write(b)
         return count
 
@@ -163,8 +167,7 @@ class SimplePty(PtyProcess):
         """
         if not s.endswith('\n'):
             s += '\n'
-        b = s.encode(self.encoding)
-        return self.write(b)
+        return self.write(s)
 
     @classmethod
     def spawn(
@@ -204,7 +207,7 @@ class SimplePty(PtyProcess):
                 try:
                     buf = remove_ansi_escape_sequences(buf + self.read())
                 except EOFError:
-                    print 'len: %d' % len(buf)
+                    print('len: %d' % len(buf))
                     assert buf == text
                 if buf == text:
                     return
@@ -213,7 +216,7 @@ class SimplePty(PtyProcess):
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        #print repr(buf)  # debug ansi code handling
+        #print(repr(buf))  # debug ansi code handling
         assert buf == text
 
     def expect_regex(self, pattern):

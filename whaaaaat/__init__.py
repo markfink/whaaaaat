@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import os
 
 from prompt_toolkit.token import Token
 from prompt_toolkit.styles import style_from_dict
 from prompt_toolkit.validation import Validator, ValidationError
 
-from utils import print_json, format_json
+from .utils import print_json, format_json
 
 
 __version__ = '0.4.0'
