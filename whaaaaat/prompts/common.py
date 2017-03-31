@@ -3,10 +3,18 @@
 common prompt functionality
 """
 
+import sys
+
 from prompt_toolkit.validation import Validator, ValidationError
 from prompt_toolkit.styles import style_from_dict
 from prompt_toolkit.token import Token
 from prompt_toolkit.mouse_events import MouseEventTypes
+
+
+PY3 = sys.version_info[0] >= 3
+
+if PY3:
+    basestring = str
 
 
 def if_mousedown(handler):
