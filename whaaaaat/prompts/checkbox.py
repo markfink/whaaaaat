@@ -203,7 +203,7 @@ def question(message, **kwargs):
         def _next():
             ic.pointer_index = ((ic.pointer_index + 1) % ic.line_count)
         _next()
-        while isinstance(ic.choices[ic.pointer_index], Separator)or \
+        while isinstance(ic.choices[ic.pointer_index], Separator) or \
                 ic.choices[ic.pointer_index][2]:
             _next()
 
@@ -212,7 +212,7 @@ def question(message, **kwargs):
         def _prev():
             ic.pointer_index = ((ic.pointer_index - 1) % ic.line_count)
         _prev()
-        while isinstance(ic.choices[ic.pointer_index], Separator)or \
+        while isinstance(ic.choices[ic.pointer_index], Separator) or \
                 ic.choices[ic.pointer_index][2]:
             _prev()
 
