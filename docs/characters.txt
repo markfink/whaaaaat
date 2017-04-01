@@ -1,4 +1,4 @@
-# usefull unicode characters
+# useful unicode characters
 
 lookup characters : http://www.babelstone.co.uk/Unicode/whatisit.html?
 table : http://unicode-table.com/en/25CE/

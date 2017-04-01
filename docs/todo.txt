@@ -4,7 +4,6 @@
 * better docs
 * readthedocs
 * landing page
-* style PyPi
 * CI
 * checkbox validate
 * editor prompt
