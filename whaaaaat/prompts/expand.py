@@ -52,7 +52,6 @@ class InquirerControl(TokenListControl):
             else:
                 if isinstance(c, basestring):
                     self.choices.append((key, c, c))
-                    key += 1
                 else:
                     key = c.get('key')
                     name = c.get('name')
