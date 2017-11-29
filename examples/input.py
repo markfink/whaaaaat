@@ -37,7 +37,7 @@ questions = [
         'type': 'input',
         'name': 'last_name',
         'message': 'What\'s your last name',
-        'default': 'Doe',
+        'default': lambda answers: 'Smith' if answers['first_name'] == 'Dave' else 'Doe',
         'validate': lambda val: val == 'Doe' or 'is your last name Doe?'
     },
     {

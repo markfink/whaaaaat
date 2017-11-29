@@ -54,6 +54,10 @@ def prompt(questions, answers=None, **kwargs):
                 if not callable(question['filter']):
                     raise ValueError('\'filter\' needs to be function that ' \
                                      'accepts an argument')
+
+            if callable(question.get('default')):
+                _kwargs['default'] = question['default'](answers)
+
             application = getattr(prompts, type).question(message, **_kwargs)
 
             answer = run_application(
