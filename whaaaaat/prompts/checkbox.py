@@ -192,7 +192,7 @@ def question(message, **kwargs):
     def all(event):
         all_selected = True  # all choices have been selected
         for c in ic.choices:
-            if not isinstance(c, Separator) and c[1] not in ic.selected_options:
+            if not isinstance(c, Separator) and c[1] not in ic.selected_options and not c[2]:
                 # add missing ones
                 ic.selected_options.append(c[1])
                 all_selected = False
