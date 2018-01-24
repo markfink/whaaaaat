@@ -185,7 +185,8 @@ def question(message, **kwargs):
     def invert(event):
         inverted_selection = [c[1] for c in ic.choices if
                               not isinstance(c, Separator) and
-                              c[1] not in ic.selected_options]
+                              c[1] not in ic.selected_options and
+                              not c[2]]
         ic.selected_options = inverted_selection
 
     @manager.registry.add_binding('a', eager=True)
