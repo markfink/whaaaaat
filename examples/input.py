@@ -6,7 +6,7 @@
 from __future__ import print_function, unicode_literals
 import regex
 
-from whaaaaat import style_from_dict, Token, prompt, print_json
+from whaaaaat import Style, prompt, print_json
 from whaaaaat import Validator, ValidationError
 
 
@@ -19,11 +19,11 @@ class PhoneNumberValidator(Validator):
                 cursor_position=len(document.text))  # Move cursor to end
 
 
-style = style_from_dict({
-        Token.QuestionMark: '#FF9D00 bold',
-        Token.Instruction: '',  # default
-        Token.Answer: '#5F819D bold',
-        Token.Question: '',
+style = Style.from_dict({
+        'questionmark': '#FF9D00 bold',
+        'instruction': '',  # default
+        'answer': '#5F819D bold',
+        'question': '',
     })
 
 

@@ -1,4 +1,6 @@
-prompt_toolkit>=1.0.14
+#prompt_toolkit>=1.0.14
+-e git://github.com/jonathanslenders/python-prompt-toolkit.git@2.0#egg=prompt_toolkit
+
 Pygments>=2.2.0
 regex>=2016.11.21
 

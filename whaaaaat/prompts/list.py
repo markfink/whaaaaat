@@ -7,8 +7,7 @@ from __future__ import unicode_literals
 
 import sys
 
-from prompt_toolkit.application import Application
-from prompt_toolkit.key_binding.manager import KeyBindingManager
+#from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import Window
 from prompt_toolkit.filters import IsDone
@@ -16,7 +15,10 @@ from prompt_toolkit.layout.controls import TokenListControl
 from prompt_toolkit.layout.containers import ConditionalContainer, \
     ScrollOffsets, HSplit
 from prompt_toolkit.layout.dimension import LayoutDimension as D
-from prompt_toolkit.token import Token
+#from prompt_toolkit.token import Token
+from prompt_toolkit.application import Application
+from prompt_toolkit.layout import Layout
+from prompt_toolkit.key_binding import KeyBindings
 
 from .. import PromptParameterException
 from ..separator import Separator
@@ -41,8 +43,7 @@ class InquirerControl(TokenListControl):
         self.answered = False
         self.choices = choices
         self._init_choices(choices)
-        super(InquirerControl, self).__init__(self._get_choice_tokens,
-                                              **kwargs)
+        super(InquirerControl, self).__init__(self._get_choices, **kwargs)
 
     def _init_choices(self, choices, default=None):
         # helper to convert from question format to internal format
@@ -67,9 +68,10 @@ class InquirerControl(TokenListControl):
     def choice_count(self):
         return len(self.choices)
 
-    def _get_choice_tokens(self, cli):
+    def _get_choices(self):
         tokens = []
-        T = Token
+        #T = Token
+        T = ''
 
         def append(index, choice):
             selected = (index == self.selected_option_index)
@@ -81,15 +83,18 @@ class InquirerControl(TokenListControl):
                 self.answered = True
                 cli.set_return_value(None)
 
-            tokens.append((T.Pointer if selected else T, ' \u276f ' if selected
+            #tokens.append((T.Pointer if selected else T, ' \u276f ' if selected
+            tokens.append(('class:pointer' if selected else T, ' \u276f ' if selected
             else '   '))
             if selected:
-                tokens.append((Token.SetCursorPosition, ''))
+                #tokens.append((Token.SetCursorPosition, ''))
+                tokens.append(('class:setcursorposition', ''))
             if choice[2]:  # disabled
-                tokens.append((T.Selected if selected else T,
+                #tokens.append((T.Selected if selected else T,
+                tokens.append(('class:selected' if selected else T,
                                '- %s (%s)' % (choice[0], choice[2])))
             else:
-                tokens.append((T.Selected if selected else T, str(choice[0]),
+                tokens.append(('class:selected' if selected else T, str(choice[0]),
                                select_item))
             tokens.append((T, '\n'))
 
@@ -116,20 +121,21 @@ def question(message, **kwargs):
 
     ic = InquirerControl(choices)
 
-    def get_prompt_tokens(cli):
+    def get_prompts():
         tokens = []
 
-        tokens.append((Token.QuestionMark, '?'))
-        tokens.append((Token.Question, ' %s ' % message))
+        tokens.append(('class:questionmark', '?'))
+        tokens.append(('class:question', ' %s ' % message))
         if ic.answered:
-            tokens.append((Token.Answer, ' ' + ic.get_selection()[0]))
+            tokens.append(('class:answer', ' ' + ic.get_selection()[0]))
         else:
-            tokens.append((Token.Instruction, ' (Use arrow keys)'))
+            tokens.append(('class:instruction', ' (Use arrow keys)'))
         return tokens
 
     # assemble layout
-    layout = HSplit([
-        Window(content=TokenListControl(get_prompt_tokens, align_center=False)),
+    layout = Layout(HSplit([
+        #Window(content=TokenListControl(get_prompt_tokens, align_center=False)),
+        Window(content=TokenListControl(get_prompts)),
         ConditionalContainer(
             Window(
                 ic,
@@ -139,18 +145,21 @@ def question(message, **kwargs):
             ),
             filter=~IsDone()
         )
-    ])
+    ]))
 
     # key bindings
-    manager = KeyBindingManager.for_prompt()
+    #manager = KeyBindingManager.for_prompt()
+    bindings = KeyBindings()
 
-    @manager.registry.add_binding(Keys.ControlQ, eager=True)
-    @manager.registry.add_binding(Keys.ControlC, eager=True)
+    #@manager.registry.add_binding(Keys.ControlQ, eager=True)
+    #@manager.registry.add_binding(Keys.ControlC, eager=True)
+    @bindings.add(Keys.ControlQ, eager=True)
+    @bindings.add(Keys.ControlC, eager=True)
     def _(event):
         raise KeyboardInterrupt()
         # event.cli.set_return_value(None)
 
-    @manager.registry.add_binding(Keys.Down, eager=True)
+    @bindings.add(Keys.Down, eager=True)
     def move_cursor_down(event):
         def _next():
             ic.selected_option_index = (
@@ -160,7 +169,7 @@ def question(message, **kwargs):
                 ic.choices[ic.selected_option_index][2]:
             _next()
 
-    @manager.registry.add_binding(Keys.Up, eager=True)
+    @bindings.add(Keys.Up, eager=True)
     def move_cursor_up(event):
         def _prev():
             ic.selected_option_index = (
@@ -170,14 +179,16 @@ def question(message, **kwargs):
                 ic.choices[ic.selected_option_index][2]:
             _prev()
 
-    @manager.registry.add_binding(Keys.Enter, eager=True)
+    @bindings.add(Keys.Enter, eager=True)
     def set_answer(event):
         ic.answered = True
         event.cli.set_return_value(ic.get_selection()[1])
 
-    return Application(
+    app = Application(
         layout=layout,
-        key_bindings_registry=manager.registry,
+        #key_bindings_registry=manager.registry,
+        key_bindings=bindings,
         mouse_support=True,
         style=style
     )
+    return app.run()

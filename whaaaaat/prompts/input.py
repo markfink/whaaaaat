@@ -3,18 +3,15 @@
 `input` type question
 """
 from __future__ import print_function, unicode_literals
-from prompt_toolkit.token import Token
-from prompt_toolkit.shortcuts import create_prompt_application
 from prompt_toolkit.validation import Validator, ValidationError
-from prompt_toolkit.layout.lexers import SimpleLexer
+from prompt_toolkit.lexers.base import SimpleLexer
+from prompt_toolkit.shortcuts import prompt
 
 from .common import default_style
 
-# use std prompt-toolkit control
-
 
 def question(message, **kwargs):
-    default = kwargs.pop('default', '')
+    #default = kwargs.pop('default', '')
     validate_prompt = kwargs.pop('validate', None)
     if validate_prompt:
         if issubclass(validate_prompt, Validator):
@@ -34,15 +31,14 @@ def question(message, **kwargs):
     # TODO style defaults on detail level
     kwargs['style'] = kwargs.pop('style', default_style)
 
-    def _get_prompt_tokens(cli):
+    def _get_prompt():
         return [
-            (Token.QuestionMark, '?'),
-            (Token.Question, ' %s  ' % message)
+            ('class:questionmark', '?'),
+            ('class:question', ' %s  ' % message)
         ]
 
-    return create_prompt_application(
-        get_prompt_tokens=_get_prompt_tokens,
-        lexer=SimpleLexer(Token.Answer),
-        default=default,
+    return prompt(_get_prompt,
+        lexer=SimpleLexer('class:answer'),
+        #default=default,
         **kwargs
     )
