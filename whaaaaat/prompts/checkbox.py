@@ -61,17 +61,18 @@ class InquirerControl(TokenListControl):
             if isinstance(line, Separator):
                 tokens.append((T.Separator, '  %s\n' % line))
             else:
-                line = line[0]
-                selected = (line in self.selected_options)
+                line_name = line[0]
+                line_value = line[1]
+                selected = (line_value in self.selected_options)  # use value to check if option has been selected
                 pointed_at = (index == self.pointer_index)
 
                 @if_mousedown
                 def select_item(cli, mouse_event):
                     # bind option with this index to mouse event
-                    if line in self.selected_options:
-                        self.selected_options.remove(line)
+                    if line_value in self.selected_options:
+                        self.selected_options.remove(line_value)
                     else:
-                        self.selected_options.append(line)
+                        self.selected_options.append(line_value)
 
                 if pointed_at:
                     tokens.append((T.Pointer, ' \u276f', select_item))  # ' >'
@@ -89,7 +90,7 @@ class InquirerControl(TokenListControl):
                     if pointed_at:
                         tokens.append((Token.SetCursorPosition, ''))
     
-                    tokens.append((T, line, select_item))
+                    tokens.append((T, line_name, select_item))
                 tokens.append((T, '\n'))
 
         # prepare the select choices
@@ -100,8 +101,8 @@ class InquirerControl(TokenListControl):
 
     def get_selected_values(self):
         # get values not labels
-        return [c[0] for c in self.choices if not isinstance(c, Separator) and
-                c[0] in self.selected_options]
+        return [c[1] for c in self.choices if not isinstance(c, Separator) and
+                c[1] in self.selected_options]
 
     @property
     def line_count(self):
@@ -174,7 +175,7 @@ def question(message, **kwargs):
 
     @manager.registry.add_binding(' ', eager=True)
     def toggle(event):
-        pointed_choice = ic.choices[ic.pointer_index][0]  # name
+        pointed_choice = ic.choices[ic.pointer_index][1]  # value
         if pointed_choice in ic.selected_options:
             ic.selected_options.remove(pointed_choice)
         else:
@@ -182,18 +183,19 @@ def question(message, **kwargs):
 
     @manager.registry.add_binding('i', eager=True)
     def invert(event):
-        inverted_selection = [c[0] for c in ic.choices if
+        inverted_selection = [c[1] for c in ic.choices if
                               not isinstance(c, Separator) and
-                              c[0] not in ic.selected_options]
+                              c[1] not in ic.selected_options and
+                              not c[2]]
         ic.selected_options = inverted_selection
 
     @manager.registry.add_binding('a', eager=True)
     def all(event):
         all_selected = True  # all choices have been selected
         for c in ic.choices:
-            if not isinstance(c, Separator) and c[0] not in ic.selected_options:
+            if not isinstance(c, Separator) and c[1] not in ic.selected_options and not c[2]:
                 # add missing ones
-                ic.selected_options.append(c[0])
+                ic.selected_options.append(c[1])
                 all_selected = False
         if all_selected:
             ic.selected_options = []
