@@ -5,17 +5,17 @@
 """
 from __future__ import print_function, unicode_literals
 
-from whaaaaat import style_from_dict, Token, prompt, print_json, Separator
+from whaaaaat import Style, prompt, print_json, Separator
 
 
-style = style_from_dict({
-    Token.Separator: '#6C6C6C',
-    Token.QuestionMark: '#FF9D00 bold',
-    Token.Selected: '#5F819D',
-    Token.Pointer: '#FF9D00 bold',
-    Token.Instruction: '',  # default
-    Token.Answer: '#5F819D bold',
-    Token.Question: '',
+style = Style.from_dict({
+    'separator':    '#6C6C6C',
+    'questionmark': '#FF9D00 bold',
+    'selected':     '#5F819D',
+    'pointer':      '#FF9D00 bold',
+    'instruction':  '',  # default
+    'answer':       '#5F819D bold',
+    'question':     '',
 })
 
 

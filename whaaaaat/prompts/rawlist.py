@@ -6,14 +6,14 @@ from __future__ import print_function, unicode_literals
 import sys
 
 from prompt_toolkit.application import Application
-from prompt_toolkit.key_binding.manager import KeyBindingManager
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import Window
 from prompt_toolkit.filters import IsDone
 from prompt_toolkit.layout.controls import TokenListControl
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit
 from prompt_toolkit.layout.dimension import LayoutDimension as D
-from prompt_toolkit.token import Token
+from prompt_toolkit.layout import Layout
+from prompt_toolkit.key_binding import KeyBindings
 
 from .. import PromptParameterException
 from ..separator import Separator
@@ -34,7 +34,7 @@ class InquirerControl(TokenListControl):
         self.pointer_index = 0
         self.answered = False
         self._init_choices(choices)
-        super(InquirerControl, self).__init__(self._get_choice_tokens,
+        super(InquirerControl, self).__init__(self._get_choices,
                                               **kwargs)
 
     def _init_choices(self, choices):
@@ -57,13 +57,13 @@ class InquirerControl(TokenListControl):
     def choice_count(self):
         return len(self.choices)
 
-    def _get_choice_tokens(self, cli):
+    def _get_choices(self):
         tokens = []
-        T = Token
+        #T = ''
 
         def _append(index, line):
             if isinstance(line, Separator):
-                tokens.append((T.Separator, '   %s\n' % line))
+                tokens.append(('class:separator', '   %s\n' % line))
             else:
                 key = line[0]
                 line = line[1]
@@ -75,18 +75,18 @@ class InquirerControl(TokenListControl):
                     self.pointer_index = index
 
                 if pointed_at:
-                    tokens.append((T.Selected, '  %d) %s' % (key, line),
+                    tokens.append(('class:selected', '  %d) %s' % (key, line),
                                    select_item))
                 else:
-                    tokens.append((T, '  %d) %s' % (key, line),
+                    tokens.append(('', '  %d) %s' % (key, line),
                                    select_item))
 
-                tokens.append((T, '\n'))
+                tokens.append(('', '\n'))
 
         # prepare the select choices
         for i, choice in enumerate(self.choices):
             _append(i, choice)
-        tokens.append((T, '  Answer: %d' % self.choices[self.pointer_index][0]))
+        tokens.append(('', '  Answer: %d' % self.choices[self.pointer_index][0]))
         return tokens
 
     def get_selected_value(self):
@@ -113,32 +113,31 @@ def question(message, **kwargs):
 
     ic = InquirerControl(choices)
 
-    def get_prompt_tokens(cli):
+    def get_prompts():
         tokens = []
-        T = Token
 
-        tokens.append((T.QuestionMark, '?'))
-        tokens.append((T.Question, ' %s ' % message))
+        tokens.append(('class:questionmark', '?'))
+        tokens.append(('class:question', ' %s ' % message))
         if ic.answered:
-            tokens.append((T.Answer, ' %s' % ic.get_selected_value()))
+            tokens.append(('class:answer', ' %s' % ic.get_selected_value()))
         return tokens
 
     # assemble layout
-    layout = HSplit([
+    layout = Layout(HSplit([
         Window(height=D.exact(1),
-               content=TokenListControl(get_prompt_tokens)
+               content=TokenListControl(get_prompts)
         ),
         ConditionalContainer(
             Window(ic),
             filter=~IsDone()
         )
-    ])
+    ]))
 
     # key bindings
-    manager = KeyBindingManager.for_prompt()
+    bindings = KeyBindings()
 
-    @manager.registry.add_binding(Keys.ControlQ, eager=True)
-    @manager.registry.add_binding(Keys.ControlC, eager=True)
+    @bindings.add(Keys.ControlQ, eager=True)
+    @bindings.add(Keys.ControlC, eager=True)
     def _(event):
         raise KeyboardInterrupt()
 
@@ -148,19 +147,20 @@ def question(message, **kwargs):
             def _reg_binding(i, keys):
                 # trick out late evaluation with a "function factory":
                 # http://stackoverflow.com/questions/3431676/creating-functions-in-a-loop
-                @manager.registry.add_binding(keys, eager=True)
+                @bindings.add(keys, eager=True)
                 def select_choice(event):
                     ic.pointer_index = i
             _reg_binding(i, '%d' % c[0])
 
-    @manager.registry.add_binding(Keys.Enter, eager=True)
+    @bindings.add(Keys.Enter, eager=True)
     def set_answer(event):
         ic.answered = True
         event.cli.set_return_value(ic.get_selected_value())
 
-    return Application(
+    app = Application(
         layout=layout,
-        key_bindings_registry=manager.registry,
+        key_bindings=bindings,
         mouse_support=True,
         style=style
     )
+    return app.run()

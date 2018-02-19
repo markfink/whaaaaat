@@ -16,11 +16,11 @@ from ptyprocess import PtyProcess
 import regex
 
 from prompt_toolkit.eventloop.posix import PosixEventLoop
-from prompt_toolkit.input import PipeInput
-from prompt_toolkit.interface import CommandLineInterface
+from prompt_toolkit.input.vt100 import PipeInput
+#from prompt_toolkit.interface import CommandLineInterface
 from prompt_toolkit.output import DummyOutput
 
-from whaaaaat import style_from_dict, Token
+from whaaaaat import Style
 from whaaaaat import prompts
 
 
@@ -44,15 +44,16 @@ keys = Bunch(
     BACK='\x7f')
 
 
-style = style_from_dict({
-    Token.QuestionMark: '#FF9D00 bold',
-    Token.Selected: '#5F819D bold',
-    Token.Instruction: '',  # default
-    Token.Answer: '#5F819D bold',
-    Token.Question: '',
+style = Style.from_dict({
+    'questionmark': '#FF9D00 bold',
+    'selected':     '#5F819D bold',
+    'instruction':  '',  # default
+    'answer':       '#5F819D bold',
+    'question':     '',
 })
 
 
+'''
 def feed_app_with_input(type, message, text, **kwargs):
     """
     Create a CommandLineInterface, feed it with the given user input and return
@@ -64,8 +65,18 @@ def feed_app_with_input(type, message, text, **kwargs):
     # If the given text doesn't end with a newline, the interface won't finish.
     assert text.endswith('\n')
 
-    application = getattr(prompts, type).question(message, **kwargs)
+    try:
+        loop = PosixEventLoop()
+        inp = PipeInput()
+        inp.send_text(text)
+        result = getattr(prompts, type).question(message, input=inp, **kwargs)
+        return result
+    finally:
+        loop.close()
+        inp.close()
+'''
 
+'''
     loop = PosixEventLoop()
     try:
         inp = PipeInput()
@@ -80,6 +91,7 @@ def feed_app_with_input(type, message, text, **kwargs):
     finally:
         loop.close()
         inp.close()
+'''
 
 
 def remove_ansi_escape_sequences(text):
@@ -216,7 +228,7 @@ class SimplePty(PtyProcess):
             else:
                 # do not eat up CPU when waiting for the timeout to expire
                 time.sleep(self.timeout/10)
-        #print(repr(buf))  # debug ansi code handling
+        print(repr(buf))  # debug ansi code handling
         assert buf == text
 
     def expect_regex(self, pattern):
