@@ -1,3 +1,5 @@
+people blame me for staling this project. I do not have time to work on this right now - whaaaaat do you want me to do? take it offline?
+
 # whaaaaat?
 
 A collection of common interactive command line user interfaces.
